@@ -1,0 +1,82 @@
+{
+  "short_name": "Medflect AI",
+  "name": "Medflect AI - Smart Healthcare Platform",
+  "description": "AI-powered healthcare platform for Ghana and beyond",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["medical", "health", "productivity"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View hospital dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "icon-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "short_name": "Patients",
+      "description": "Manage patients",
+      "url": "/patients",
+      "icons": [
+        {
+          "src": "icon-patients.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Access AI features",
+      "url": "/ai",
+      "icons": [
+        {
+          "src": "icon-ai.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+} 
