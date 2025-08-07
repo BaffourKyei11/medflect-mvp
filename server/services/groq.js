@@ -194,97 +194,85 @@ const testGroqConnection = async () => {
   }
 };
 
-// Generate clinical summary with enhanced security
-const generateClinicalSummary = async (patientId, encounterId, summaryType = 'clinical', userId) => {
+// Generate clinical summary with provider-agnostic LLM API
+const { generateLLMCompletion } = require('./llmProvider');
+
+const generateClinicalSummary = async (patientId, encounterId, summaryType = 'clinical', userId, opts = {}) => {
   try {
     const startTime = Date.now();
-    
-    // Rate limiting check
     checkRateLimit();
-    
-    // Validate inputs
-    if (!patientId || !userId) {
-      throw new Error('Missing required parameters');
-    }
-    
-    // Get patient data with access control
+    if (!patientId || !userId) throw new Error('Missing required parameters');
     const patientData = await getPatientDataForSummary(patientId, encounterId, userId);
-    
-    if (!patientData) {
-      throw new Error('Patient data not found or access denied');
-    }
+    if (!patientData) throw new Error('Patient data not found or access denied');
 
-    // Create prompt with security validation
-    const prompt = createSummaryPrompt(patientData, summaryType);
-    const sanitizedPrompt = validateAndSanitizeInput(prompt, {
-      patientId,
-      encounterId,
-      summaryType,
-      userId
-    });
-    
-    // Generate summary using Groq/LiteLLM
-    const response = await groqClient.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: getSystemPrompt(summaryType)
-        },
-        {
-          role: 'user',
-          content: sanitizedPrompt
-        }
-      ],
-      model: process.env.GROQ_MODEL || 'llama3-8b-8192',
+    // Use modular prompt (A/B testing ready)
+    const promptType = summaryType || 'clinical';
+    const promptVersion = opts.promptVersion || 'v1';
+    const provider = opts.provider || process.env.LLM_PROVIDER || 'groq';
+    const model = opts.model;
+    const llmResult = await generateLLMCompletion({
+      provider,
+      promptType,
+      promptVersion,
+      promptData: patientData,
+      model,
+      userId,
       max_tokens: Math.min(2000, SECURITY_CONFIG.MAX_TOKENS_PER_REQUEST),
       temperature: 0.3,
-      top_p: 0.9
+      ...opts
     });
-
-    const rawSummary = response.choices[0]?.message?.content;
-    const sanitizedSummary = validateAndSanitizeOutput(rawSummary, {
+    const sanitizedSummary = validateAndSanitizeOutput(llmResult.content, {
       patientId,
       encounterId,
       summaryType,
       userId
     });
-    
     const duration = Date.now() - startTime;
-    const confidenceScore = calculateConfidenceScore(response);
-
-    // Log AI interaction for audit
+    const confidenceScore = calculateConfidenceScore(llmResult.raw);
     await logAIInteraction({
       userId,
       patientId,
       encounterId,
       action: 'clinical_summary',
-      inputLength: sanitizedPrompt.length,
+      inputLength: llmResult.content?.length || 0,
       outputLength: sanitizedSummary.length,
-      tokens: response.usage?.total_tokens || 0,
+      tokens: llmResult.usage?.total_tokens || 0,
       duration,
       confidenceScore,
-      model: process.env.GROQ_MODEL
+      model: llmResult.model,
+      provider: llmResult.provider
     });
-
     logger.ai('Clinical summary generated', {
       patientId,
       encounterId,
       summaryType,
       duration,
-      tokens: response.usage?.total_tokens || 0,
-      model: process.env.GROQ_MODEL,
+      tokens: llmResult.usage?.total_tokens || 0,
+      model: llmResult.model,
+      provider: llmResult.provider,
       confidenceScore
     });
-
+    // Run clinical NLP (spaCy and MedCAT)
+    let nlpResults = {};
+    try {
+      const { extractClinicalEntities } = require('./clinicalNLP');
+      nlpResults.spacy = await extractClinicalEntities(sanitizedSummary, { engine: 'spacy' });
+      nlpResults.medcat = await extractClinicalEntities(sanitizedSummary, { engine: 'medcat' });
+    } catch (e) {
+      logger.errorWithContext(e, 'clinical_nlp_auto_error', { summaryType });
+      nlpResults.error = e.message;
+    }
     return {
       content: sanitizedSummary,
-      modelVersion: process.env.GROQ_MODEL,
+      modelVersion: llmResult.model,
+      provider: llmResult.provider,
       confidenceScore,
-      tokens: response.usage?.total_tokens || 0,
+      tokens: llmResult.usage?.total_tokens || 0,
       duration,
-      securityHash: generateSecurityHash(sanitizedSummary)
+      securityHash: generateSecurityHash(sanitizedSummary),
+      nlp: nlpResults
     };
-    
+
   } catch (error) {
     logger.errorWithContext(error, 'clinical_summary_generation', {
       patientId,

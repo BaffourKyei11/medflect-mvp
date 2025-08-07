@@ -294,13 +294,17 @@ router.get('/interactions',
           ai.confidence_score,
           ai.model,
           ai.created_at,
+          ai.provider,
+          ai.security_hash,
+          ai.error_log,
+          ai.nlp_results,
           u.email as user_email,
-          u.first_name as user_first_name,
-          u.last_name as user_last_name,
+          p.id as patient_id,
+          p.mrn as patient_mrn,
           p.first_name as patient_first_name,
           p.last_name as patient_last_name
         FROM ai_interactions ai
-        LEFT JOIN users u ON ai.user_id = u.id
+        JOIN users u ON ai.user_id = u.id
         LEFT JOIN patients p ON ai.patient_id = p.id
         ORDER BY ai.created_at DESC
         LIMIT ? OFFSET ?
@@ -392,5 +396,27 @@ router.get('/statistics',
     }
   }
 );
+
+// Clinical NLP extraction endpoint
+const { extractClinicalEntities } = require('../services/clinicalNLP');
+const nlpSchema = Joi.object({
+  text: Joi.string().required(),
+  engine: Joi.string().valid('spacy', 'medcat').default('spacy'),
+  entities: Joi.array().items(Joi.string()).optional(),
+  model: Joi.string().optional()
+});
+
+router.post('/nlp', authMiddleware, aiRateLimiter, async (req, res, next) => {
+  try {
+    const { error, value } = nlpSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+    const { text, engine, entities, model } = value;
+    const result = await extractClinicalEntities(text, { engine, entities, model });
+    res.json({ success: true, engine, result });
+  } catch (e) {
+    logger.errorWithContext(e, 'nlp_api_error');
+    res.status(500).json({ error: e.message });
+  }
+});
 
 module.exports = router; 

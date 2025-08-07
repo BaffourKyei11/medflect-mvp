@@ -17,6 +17,8 @@ const patientRoutes = require('./routes/patients');
 const aiRoutes = require('./routes/ai');
 const blockchainRoutes = require('./routes/blockchain');
 const fhirRoutes = require('./routes/fhir');
+const consentRoutes = require('./routes/consent');
+const auditRoutes = require('./routes/audit');
 const syncRoutes = require('./routes/sync');
 const dashboardRoutes = require('./routes/dashboard');
 
@@ -85,6 +87,8 @@ app.use('/api/patients', authMiddleware, patientRoutes);
 app.use('/api/ai', authMiddleware, aiRoutes);
 app.use('/api/blockchain', authMiddleware, blockchainRoutes);
 app.use('/api/fhir', authMiddleware, fhirRoutes);
+app.use('/api/consent', authMiddleware, consentRoutes);
+app.use('/api/audit', authMiddleware, auditRoutes);
 app.use('/api/sync', authMiddleware, syncRoutes);
 app.use('/api/dashboard', authMiddleware, dashboardRoutes);
 
