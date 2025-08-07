@@ -1,0 +1,96 @@
+2025-08-07 02:55:10 [ERROR]: uncaughtException: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+Error: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js:4:25)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {"error":{"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\MYSELF\\medflect-mvp\\server\\middleware\\auth.js","C:\\Users\\MYSELF\\medflect-mvp\\server\\index.js"]},"exception":true,"date":"Thu Aug 07 2025 02:55:10 GMT-0700 (Pacific Daylight Time)","process":{"pid":6864,"uid":null,"gid":null,"cwd":"C:\\Users\\MYSELF\\medflect-mvp","execPath":"C:\\Program Files\\nodejs\\node.exe","version":"v22.18.0","argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\MYSELF\\medflect-mvp\\server\\index.js"],"memoryUsage":{"rss":51761152,"heapTotal":18968576,"heapUsed":13642728,"external":2221566,"arrayBuffers":18675}},"os":{"loadavg":[0,0,0],"uptime":3575.828},"trace":[{"column":15,"file":"node:internal/modules/cjs/loader","function":"Function._resolveFilename","line":1365,"method":"_resolveFilename","native":false},{"column":19,"file":"node:internal/modules/cjs/loader","function":"defaultResolveImpl","line":1021,"method":null,"native":false},{"column":22,"file":"node:internal/modules/cjs/loader","function":"resolveForCJSWithHooks","line":1026,"method":null,"native":false},{"column":37,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1175,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":235,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1445,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":135,"method":null,"native":false},{"column":25,"file":"C:\\Users\\MYSELF\\medflect-mvp\\server\\middleware\\auth.js","function":null,"line":4,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1688,"method":"_compile","native":false}],"service":"medflect-ai","hospital":"37 Military Hospital","environment":"development"}
+Error: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js:4:25)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+2025-08-07 02:55:18 [ERROR]: uncaughtException: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+Error: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js:4:25)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {"error":{"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\MYSELF\\medflect-mvp\\server\\middleware\\auth.js","C:\\Users\\MYSELF\\medflect-mvp\\server\\index.js"]},"exception":true,"date":"Thu Aug 07 2025 02:55:18 GMT-0700 (Pacific Daylight Time)","process":{"pid":10412,"uid":null,"gid":null,"cwd":"C:\\Users\\MYSELF\\medflect-mvp\\server","execPath":"C:\\Program Files\\nodejs\\node.exe","version":"v22.18.0","argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\MYSELF\\medflect-mvp\\server\\index.js"],"memoryUsage":{"rss":50642944,"heapTotal":18968576,"heapUsed":13663416,"external":2221566,"arrayBuffers":18675}},"os":{"loadavg":[0,0,0],"uptime":3584.062},"trace":[{"column":15,"file":"node:internal/modules/cjs/loader","function":"Function._resolveFilename","line":1365,"method":"_resolveFilename","native":false},{"column":19,"file":"node:internal/modules/cjs/loader","function":"defaultResolveImpl","line":1021,"method":null,"native":false},{"column":22,"file":"node:internal/modules/cjs/loader","function":"resolveForCJSWithHooks","line":1026,"method":null,"native":false},{"column":37,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1175,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":235,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1445,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":135,"method":null,"native":false},{"column":25,"file":"C:\\Users\\MYSELF\\medflect-mvp\\server\\middleware\\auth.js","function":null,"line":4,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1688,"method":"_compile","native":false}],"service":"medflect-ai","hospital":"37 Military Hospital","environment":"development"}
+Error: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js:4:25)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+2025-08-07 02:55:49 [ERROR]: uncaughtException: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+Error: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js:4:25)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {"error":{"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\MYSELF\\medflect-mvp\\server\\middleware\\auth.js","C:\\Users\\MYSELF\\medflect-mvp\\server\\index.js"]},"exception":true,"date":"Thu Aug 07 2025 02:55:49 GMT-0700 (Pacific Daylight Time)","process":{"pid":13500,"uid":null,"gid":null,"cwd":"C:\\Users\\MYSELF\\medflect-mvp\\server","execPath":"C:\\Program Files\\nodejs\\node.exe","version":"v22.18.0","argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\MYSELF\\medflect-mvp\\server\\index.js"],"memoryUsage":{"rss":50716672,"heapTotal":18968576,"heapUsed":13567000,"external":2221566,"arrayBuffers":18675}},"os":{"loadavg":[0,0,0],"uptime":3615.578},"trace":[{"column":15,"file":"node:internal/modules/cjs/loader","function":"Function._resolveFilename","line":1365,"method":"_resolveFilename","native":false},{"column":19,"file":"node:internal/modules/cjs/loader","function":"defaultResolveImpl","line":1021,"method":null,"native":false},{"column":22,"file":"node:internal/modules/cjs/loader","function":"resolveForCJSWithHooks","line":1026,"method":null,"native":false},{"column":37,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1175,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":235,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1445,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":135,"method":null,"native":false},{"column":25,"file":"C:\\Users\\MYSELF\\medflect-mvp\\server\\middleware\\auth.js","function":null,"line":4,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1688,"method":"_compile","native":false}],"service":"medflect-ai","hospital":"37 Military Hospital","environment":"development"}
+Error: Cannot find module '../services/userService'
+Require stack:
+- C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js
+- C:\Users\MYSELF\medflect-mvp\server\index.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\MYSELF\medflect-mvp\server\middleware\auth.js:4:25)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
