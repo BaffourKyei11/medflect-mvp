@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0d9488" />
+    <meta name="description" content="Medflect - AI-powered clinical decision support tool for Ghanaian healthcare workers" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Medflect" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Medflect" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://medflect.app/" />
+    <meta property="og:title" content="Medflect - AI Clinical Decision Support" />
+    <meta property="og:description" content="Empowering Ghanaian healthcare workers with intelligent clinical decision support, patient management, and diagnostic assistance." />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://medflect.app/" />
+    <meta property="twitter:title" content="Medflect - AI Clinical Decision Support" />
+    <meta property="twitter:description" content="Empowering Ghanaian healthcare workers with intelligent clinical decision support, patient management, and diagnostic assistance." />
+    <meta property="twitter:image" content="%PUBLIC_URL%/twitter-image.png" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="%PUBLIC_URL%/apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="%PUBLIC_URL%/apple-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="%PUBLIC_URL%/apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="%PUBLIC_URL%/apple-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="%PUBLIC_URL%/apple-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="%PUBLIC_URL%/apple-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="%PUBLIC_URL%/apple-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="%PUBLIC_URL%/apple-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-icon-180x180.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="%PUBLIC_URL%/android-icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="%PUBLIC_URL%/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Critical CSS for loading state */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .loading-content {
+        text-align: center;
+        color: #0d9488;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e6fffa;
+        border-top: 3px solid #0d9488;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      
+      .loading-subtitle {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+      
+      /* Hide loading screen when React app loads */
+      #root:not(:empty) + .loading-screen {
+        display: none;
+      }
+    </style>
+    
+    <title>Medflect - AI Clinical Decision Support</title>
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 20px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+        <h1 style="color: #0d9488;">Medflect</h1>
+        <p>You need to enable JavaScript to run this clinical decision support application.</p>
+        <p>Please enable JavaScript in your browser settings and refresh the page.</p>
+      </div>
+    </noscript>
+    
+    <!-- React App Root -->
+    <div id="root"></div>
+    
+    <!-- Loading Screen (shown while React app loads) -->
+    <div class="loading-screen">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Medflect</div>
+        <div class="loading-subtitle">Loading clinical tools...</div>
+      </div>
+    </div>
+    
+    <!-- PWA Install Prompt Script -->
+    <script>
+      // PWA Install Prompt
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        
+        // Show custom install prompt after 3 seconds
+        setTimeout(() => {
+          if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
+            showInstallPrompt();
+          }
+        }, 3000);
+      });
+      
+      function showInstallPrompt() {
+        const installBanner = document.createElement('div');
+        installBanner.className = 'pwa-install-prompt';
+        installBanner.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+              <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0d9488, #0ea5e9); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              <div>
+                <div style="font-weight: 600; color: #111827; margin-bottom: 2px;">Install Medflect</div>
+                <div style="font-size: 14px; color: #6b7280;">Add to home screen for quick access</div>
+              </div>
+            </div>
+            <div>
+              <button onclick="installApp()" style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; margin-right: 8px; cursor: pointer;">Install</button>
+              <button onclick="dismissInstallPrompt()" style="background: transparent; color: #6b7280; border: none; padding: 8px; cursor: pointer; font-size: 18px;">&times;</button>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(installBanner);
+      }
+      
+      function installApp() {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            }
+            deferredPrompt = null;
+            dismissInstallPrompt();
+          });
+        }
+      }
+      
+      function dismissInstallPrompt() {
+        const prompt = document.querySelector('.pwa-install-prompt');
+        if (prompt) {
+          prompt.remove();
+        }
+      }
+      
+      // Track PWA usage
+      window.addEventListener('appinstalled', (evt) => {
+        console.log('Medflect PWA was installed');
+      });
+      
+      // Handle PWA display mode
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('Running as PWA');
+        document.body.classList.add('pwa-mode');
+      }
+    </script>
+  </body>
+</html>
