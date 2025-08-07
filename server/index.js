@@ -14,7 +14,6 @@ const { authMiddleware } = require('./middleware/auth');
 // Import routes
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patients');
-const aiRoutes = require('./routes/ai');
 const blockchainRoutes = require('./routes/blockchain');
 const fhirRoutes = require('./routes/fhir');
 const consentRoutes = require('./routes/consent');
@@ -25,8 +24,7 @@ const dashboardRoutes = require('./routes/dashboard');
 // Import services
 const { initializeDatabase } = require('./services/database');
 const { initializeBlockchain } = require('./services/blockchain');
-const { initializeGroq } = require('./services/groq');
-const { initializeSync } = require('./services/sync');
+// Do NOT import groq/sync at top-level; lazy-require them in startServer()
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -46,11 +44,18 @@ app.use(helmet({
 // Compression middleware
 app.use(compression());
 
-// CORS configuration
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
+// CORS configuration (env-driven)
+const allowedOrigins = (() => {
+  if (process.env.ALLOWED_ORIGINS) {
+    return process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return process.env.NODE_ENV === 'production'
     ? ['https://medflect.ai', 'https://app.medflect.ai']
-    : ['http://localhost:3000', 'http://localhost:3001'],
+    : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'];
+})();
+
+app.use(cors({
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -64,7 +69,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 // Rate limiting
-app.use(rateLimiter);
+// TODO: Re-enable after fixing middleware crash in rateLimiter
+// app.use(rateLimiter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -84,7 +90,12 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', authMiddleware, patientRoutes);
-app.use('/api/ai', authMiddleware, aiRoutes);
+try {
+  const aiRoutes = require('./routes/ai');
+  app.use('/api/ai', authMiddleware, aiRoutes);
+} catch (e) {
+  logger.warning('AI routes disabled due to load error', { error: e.message });
+}
 app.use('/api/blockchain', authMiddleware, blockchainRoutes);
 app.use('/api/fhir', authMiddleware, fhirRoutes);
 app.use('/api/consent', authMiddleware, consentRoutes);
@@ -92,12 +103,12 @@ app.use('/api/audit', authMiddleware, auditRoutes);
 app.use('/api/sync', authMiddleware, syncRoutes);
 app.use('/api/dashboard', authMiddleware, dashboardRoutes);
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-  
+// Serve static files in production (optional). Set SERVE_WEB_DIST=true to serve Vite build
+if (process.env.NODE_ENV === 'production' && process.env.SERVE_WEB_DIST === 'true') {
+  const webDist = path.join(__dirname, '../packages/web/dist');
+  app.use(express.static(webDist));
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    res.sendFile(path.join(webDist, 'index.html'));
   });
 }
 
@@ -121,8 +132,18 @@ async function startServer() {
     // Initialize core services
     await initializeDatabase();
     await initializeBlockchain();
-    await initializeGroq();
-    await initializeSync();
+    try {
+      const { initializeGroq } = require('./services/groq');
+      await initializeGroq();
+    } catch (e) {
+      logger.warning('Groq/LiteLLM initialization failed. Continuing without AI.', { error: e.message });
+    }
+    try {
+      const { initializeSync } = require('./services/sync');
+      await initializeSync();
+    } catch (e) {
+      logger.warning('Sync service initialization failed. Continuing without sync.', { error: e.message });
+    }
     
     app.listen(PORT, () => {
       logger.info(`✅ Medflect AI Server running on port ${PORT}`);

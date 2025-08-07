@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: medflect-api
+    env: docker
+    plan: free
+    autoDeploy: true
+    region: oregon
+    dockerfilePath: packages/api/Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: CORS_ORIGIN
+        value: https://medflect-bdxaprni9-atenkas-projects.vercel.app
+      - key: GROQ_BASE_URL
+        value: https://api.groq.com
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama3-8b-8192

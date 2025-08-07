@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  ganache:
+    image: trufflesuite/ganache:v7.9.2
+    command: ["--wallet.totalAccounts","10","--wallet.defaultBalance","1000"]
+    container_name: ganache
+    ports:
+      - "8545:8545"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medflect-api
+    depends_on:
+      - ganache
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - SERVE_WEB_DIST=true
+    ports:
+      - "3001:3001"

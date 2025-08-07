@@ -175,14 +175,4 @@ logger.warning = (message, meta = {}) => {
   logger.warn(`⚠️ ${message}`, { ...meta, context: 'warning' });
 };
 
-// Info logging with emoji
-logger.info = (message, meta = {}) => {
-  logger.info(`ℹ️ ${message}`, meta);
-};
-
-// Debug logging
-logger.debug = (message, meta = {}) => {
-  logger.debug(`🔍 ${message}`, meta);
-};
-
-module.exports = { logger }; 
+module.exports = { logger };

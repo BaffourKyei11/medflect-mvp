@@ -6,11 +6,11 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY client/package*.json ./client/
+COPY packages/web/package*.json ./packages/web/
 
 # Install dependencies
 RUN npm ci --only=production && \
-    cd client && npm ci --only=production
+    cd packages/web && npm ci --only=production
 
 # Build stage
 FROM node:18-alpine AS builder
@@ -19,17 +19,17 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY client/package*.json ./client/
+COPY packages/web/package*.json ./packages/web/
 
 # Install all dependencies (including dev dependencies)
 RUN npm ci && \
-    cd client && npm ci
+    cd packages/web && npm ci
 
 # Copy source code
 COPY . .
 
-# Build client
-RUN cd client && npm run build
+# Build web frontend
+RUN cd packages/web && npm run build
 
 # Production stage
 FROM node:18-alpine AS production
@@ -49,8 +49,8 @@ COPY package*.json ./
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy built client from builder stage
-COPY --from=builder /app/client/build ./client/build
+# Copy built web from builder stage
+COPY --from=builder /app/packages/web/dist ./packages/web/dist
 
 # Copy server source
 COPY server ./server

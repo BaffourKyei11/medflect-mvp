@@ -1,0 +1,54 @@
+name: Medflect CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install root dependencies
+        run: npm install
+      - name: Generate code with Groq tools
+        run: node generate.js
+      - name: Test offline sync
+        run: node packages/testOfflineSync.js
+      - name: Lint backend
+        run: npm run lint
+      - name: Test backend
+        run: npm test
+      - name: Install web dependencies
+        run: |
+          cd packages/web
+          npm install
+      - name: Lint web
+        run: |
+          cd packages/web
+          npm run lint
+      - name: Test web
+        run: |
+          cd packages/web
+          npm test
+      - name: Install mobile dependencies
+        run: |
+          cd packages/mobile
+          npm install
+      - name: Lint mobile
+        run: |
+          cd packages/mobile
+          npm run lint
+      - name: Test mobile
+        run: |
+          cd packages/mobile
+          npm test

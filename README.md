@@ -23,10 +23,10 @@ Medflect AI is a revolutionary healthcare platform that combines AI-powered clin
          │                       │                       │
          │                       │                       │
          ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   PouchDB       │    │   SQLite        │    │   Ethereum      │
-│   Local Storage │    │   Database      │    │   Blockchain    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+┌───────────────────────────────┐    ┌─────────────────┐
+│   Firebase Firestore          │    │   Ethereum      │
+│   (offline cache via SDK)     │    │   Blockchain    │
+└───────────────────────────────┘    └─────────────────┘
 ```
 
 ## 🚀 Quick Start
@@ -60,13 +60,20 @@ Medflect AI is a revolutionary healthcare platform that combines AI-powered clin
 4. **Start Development**
    ```bash
    npm run dev
-   ```
+```
+
+## 📽️ Demo
+
+See `Demo/README.md` for step-by-step demo instructions and expected outcomes.
+
+- Demo guide: `Demo/README.md`
+- Screenshots folder: `Demo/screenshots/` (place images like `01-landing.png`, `02-theme-toggle.png`)
 
 ## 📁 Project Structure
 
 ```
 medflect-mvp/
-├── client/                 # React PWA Frontend
+├── packages/web/           # Vite React PWA Frontend
 │   ├── src/
 │   │   ├── components/     # React components
 │   │   ├── pages/         # Page components
@@ -93,12 +100,15 @@ medflect-mvp/
 # Server Configuration
 PORT=3001
 NODE_ENV=development
+# Serve built web UI from the API in production
+SERVE_WEB_DIST=true
 
 # Database
-DATABASE_URL=./data/medflect.db
+DATABASE_URL=https://<your-firebase-project-id>.firebaseio.com
 
 # Groq AI
-GROQ_API_KEY=your_groq_api_key
+GROQ_API_KEY=sk-npvlOAYvZsy6iRqqtM5PNA
+GROQ_API_ENDPOINT=http://91.108.112.45:4000
 GROQ_MODEL=llama3-8b-8192
 
 # Blockchain
@@ -151,9 +161,9 @@ FHIR_BASE_URL=https://hapi.fhir.org/baseR4
 
 Medflect AI is designed to work seamlessly in Ghana's variable connectivity environments:
 
-- **Local Data Storage**: PouchDB with SQLite backend
-- **Background Sync**: Automatic synchronization when online
-- **Conflict Resolution**: Smart merging of offline changes
+- **Local Cache**: Firebase Web SDK enables IndexedDB-backed persistence
+- **Background Sync**: Automatic synchronization when connectivity returns
+- **Conflict Handling**: Firestore last-write-wins; domain rules can be enforced server-side
 - **Progressive Enhancement**: Core features work offline
 
 ## 🤖 AI Capabilities
@@ -200,6 +210,15 @@ npm start
 ```bash
 docker-compose up -d
 ```
+
+The API container now serves the built frontend from `packages/web/dist` on port 3001.
+
+- Access UI: http://localhost:3001/
+- Health check: http://localhost:3001/health
+
+Notes:
+- The compose file builds from the root `Dockerfile` and sets `NODE_ENV=production` and `SERVE_WEB_DIST=true` for the API service.
+- There is no separate `web` service; the API serves static assets in production.
 
 ## 🧪 Testing
 

@@ -123,12 +123,12 @@ install_dependencies() {
         print_success "Server dependencies installed"
     fi
     
-    # Install client dependencies
-    if [ -f client/package.json ]; then
-        cd client
+    # Install web (Vite) dependencies
+    if [ -f packages/web/package.json ]; then
+        cd packages/web
         npm install
-        cd ..
-        print_success "Client dependencies installed"
+        cd ../..
+        print_success "Web dependencies installed"
     fi
 }
 
@@ -136,11 +136,11 @@ install_dependencies() {
 build_client() {
     print_status "Building client..."
     
-    if [ -f client/package.json ]; then
-        cd client
+    if [ -f packages/web/package.json ]; then
+        cd packages/web
         npm run build
-        cd ..
-        print_success "Client built successfully"
+        cd ../..
+        print_success "Web app built successfully"
     fi
 }
 
@@ -153,7 +153,7 @@ start_development() {
         DEV_PID=$!
         print_success "Development servers started (PID: $DEV_PID)"
         print_status "Server will be available at http://localhost:3001"
-        print_status "Client will be available at http://localhost:3000"
+        print_status "Web app (Vite) will be available at http://localhost:5173 (or next free port)"
         print_status "Press Ctrl+C to stop the servers"
         
         # Wait for user to stop
@@ -188,7 +188,7 @@ show_help() {
     echo "  --setup          Setup environment and install dependencies"
     echo "  --dev            Start development servers"
     echo "  --docker         Start with Docker"
-    echo "  --build          Build client for production"
+    echo "  --build          Build web app for production"
     echo "  --help           Show this help message"
     echo ""
     echo "Examples:"

@@ -1,25 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const { authMiddleware, requireDoctor, requireAdmin } = require('../middleware/auth');
-const { rateLimiter } = require('../middleware/rateLimiter');
-const { 
-  generateClinicalSummary, 
-  generateClinicalDecisionSupport, 
-  generatePatientCommunication, 
-  checkMedicationInteractions,
-  isGroqAvailable 
-} = require('../services/groq');
+const { aiRateLimit } = require('../middleware/rateLimiter');
 const { logger } = require('../utils/logger');
 const { ValidationError } = require('../middleware/errorHandler');
 const Joi = require('joi');
 
+// Lazy-load Groq service to avoid crashing when AI deps/config are missing
+let generateClinicalSummary;
+let generateClinicalDecisionSupport;
+let generatePatientCommunication;
+let checkMedicationInteractions;
+let isGroqAvailable;
+
+try {
+  const groqSvc = require('../services/groq');
+  ({
+    generateClinicalSummary,
+    generateClinicalDecisionSupport,
+    generatePatientCommunication,
+    checkMedicationInteractions,
+    isGroqAvailable
+  } = groqSvc);
+} catch (e) {
+  // Provide safe fallbacks so routes can respond with 503 instead of crashing
+  isGroqAvailable = () => false;
+  const unavailable = async () => {
+    const err = new Error('AI service is currently unavailable');
+    err.code = 'AI_SERVICE_UNAVAILABLE';
+    throw err;
+  };
+  generateClinicalSummary = unavailable;
+  generateClinicalDecisionSupport = unavailable;
+  generatePatientCommunication = unavailable;
+  checkMedicationInteractions = unavailable;
+}
+
 // AI-specific rate limiting
-const aiRateLimiter = rateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // 10 requests per minute per user
-  message: 'AI rate limit exceeded. Please try again later.',
-  keyGenerator: (req) => `ai_${req.user.id}`
-});
+// Use preconfigured middleware from rateLimiter module
 
 // Input validation schemas
 const clinicalSummarySchema = Joi.object({
@@ -84,9 +102,9 @@ const validateInput = (schema) => {
 
 // Generate clinical summary
 router.post('/clinical-summary', 
-  authMiddleware, 
-  requireDoctor, 
-  aiRateLimiter,
+  authMiddleware,
+  requireDoctor,
+  aiRateLimit,
   checkAIService,
   validateInput(clinicalSummarySchema),
   async (req, res, next) => {
@@ -129,7 +147,7 @@ router.post('/clinical-summary',
 router.post('/clinical-decision-support',
   authMiddleware,
   requireDoctor,
-  aiRateLimiter,
+  aiRateLimit,
   checkAIService,
   validateInput(clinicalDecisionSupportSchema),
   async (req, res, next) => {
@@ -172,7 +190,7 @@ router.post('/clinical-decision-support',
 router.post('/patient-communication',
   authMiddleware,
   requireDoctor,
-  aiRateLimiter,
+  aiRateLimit,
   checkAIService,
   validateInput(patientCommunicationSchema),
   async (req, res, next) => {
@@ -215,7 +233,7 @@ router.post('/patient-communication',
 router.post('/medication-interactions',
   authMiddleware,
   requireDoctor,
-  aiRateLimiter,
+  aiRateLimit,
   checkAIService,
   validateInput(medicationInteractionSchema),
   async (req, res, next) => {
@@ -406,7 +424,7 @@ const nlpSchema = Joi.object({
   model: Joi.string().optional()
 });
 
-router.post('/nlp', authMiddleware, aiRateLimiter, async (req, res, next) => {
+router.post('/nlp', authMiddleware, aiRateLimit, async (req, res, next) => {
   try {
     const { error, value } = nlpSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });

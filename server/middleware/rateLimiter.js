@@ -8,10 +8,6 @@ const createRateLimiter = (points, duration, blockDuration = 0) => {
     points, // Number of requests
     duration, // Per duration in seconds
     blockDuration, // Block duration in seconds (0 = no blocking)
-    keyGenerator: (req) => {
-      // Use user ID if authenticated, otherwise use IP
-      return req.user ? `user:${req.user.id}` : `ip:${req.ip}`;
-    },
     onConsume: (key, points, remainingPoints) => {
       logger.debug(`Rate limit consumed: ${key}, points: ${points}, remaining: ${remainingPoints}`);
     },
@@ -46,10 +42,12 @@ const adminLimiter = createRateLimiter(30, 60 * 60);
 const createRateLimitMiddleware = (limiter, errorMessage = 'Rate limit exceeded') => {
   return async (req, res, next) => {
     try {
-      await limiter.consume(req);
+      const key = req && req.user ? `user:${req.user.id}` : `ip:${req?.ip}`;
+      await limiter.consume(key || 'unknown');
       next();
     } catch (rejRes) {
-      const secs = Math.round(rejRes.msBeforeNext / 1000) || 1;
+      const msBeforeNext = (rejRes && typeof rejRes.msBeforeNext === 'number') ? rejRes.msBeforeNext : 1000;
+      const secs = Math.round(msBeforeNext / 1000) || 1;
       
       logger.warning('Rate limit exceeded', {
         key: rejRes.key,
@@ -62,16 +60,21 @@ const createRateLimitMiddleware = (limiter, errorMessage = 'Rate limit exceeded'
         userId: req.user?.id
       });
 
-      res.set('Retry-After', String(secs));
-      res.status(429).json({
-        success: false,
-        error: {
-          message: errorMessage,
-          retryAfter: secs,
-          remainingPoints: rejRes.remainingPoints,
-          totalPoints: rejRes.points
-        }
-      });
+      if (res && typeof res.set === 'function' && typeof res.status === 'function') {
+        res.set('Retry-After', String(secs));
+        res.status(429).json({
+          success: false,
+          error: {
+            message: errorMessage,
+            retryAfter: secs,
+            remainingPoints: rejRes?.remainingPoints,
+            totalPoints: rejRes?.points
+          }
+        });
+      } else {
+        logger.error('Response object missing in rateLimiter middleware; forwarding RateLimitError');
+        next(new RateLimitError(errorMessage));
+      }
     }
   };
 };
@@ -112,10 +115,12 @@ const dynamicRateLimit = async (req, res, next) => {
   }
 
   try {
-    await limiter.consume(req);
+    const key = req && req.user ? `user:${req.user.id}` : `ip:${req?.ip}`;
+    await limiter.consume(key || 'unknown');
     next();
   } catch (rejRes) {
-    const secs = Math.round(rejRes.msBeforeNext / 1000) || 1;
+    const msBeforeNext = (rejRes && typeof rejRes.msBeforeNext === 'number') ? rejRes.msBeforeNext : 1000;
+    const secs = Math.round(msBeforeNext / 1000) || 1;
     
     logger.warning('Dynamic rate limit exceeded', {
       key: rejRes.key,
@@ -124,15 +129,20 @@ const dynamicRateLimit = async (req, res, next) => {
       remainingPoints: rejRes.remainingPoints
     });
 
-    res.set('Retry-After', String(secs));
-    res.status(429).json({
-      success: false,
-      error: {
-        message: 'Rate limit exceeded',
-        retryAfter: secs,
-        remainingPoints: rejRes.remainingPoints
-      }
-    });
+    if (res && typeof res.set === 'function' && typeof res.status === 'function') {
+      res.set('Retry-After', String(secs));
+      res.status(429).json({
+        success: false,
+        error: {
+          message: 'Rate limit exceeded',
+          retryAfter: secs,
+          remainingPoints: rejRes?.remainingPoints
+        }
+      });
+    } else {
+      logger.error('Response object missing in dynamicRateLimit; forwarding RateLimitError');
+      next(new RateLimitError('Rate limit exceeded'));
+    }
   }
 };
 
@@ -141,7 +151,6 @@ const burstProtection = (maxBurst, windowMs) => {
   const limiter = new RateLimiterMemory({
     points: maxBurst,
     duration: windowMs / 1000,
-    keyGenerator: (req) => `burst:${req.user?.id || req.ip}`,
     onConsume: (key, points, remainingPoints) => {
       logger.debug(`Burst protection: ${key}, remaining: ${remainingPoints}`);
     }
@@ -155,7 +164,6 @@ const createTimeWindowLimiter = (windowMs, maxRequests) => {
   const limiter = new RateLimiterMemory({
     points: maxRequests,
     duration: windowMs / 1000,
-    keyGenerator: (req) => `window:${req.user?.id || req.ip}`,
   });
 
   return createRateLimitMiddleware(limiter, `Rate limit exceeded for ${windowMs}ms window`);
