@@ -2,7 +2,11 @@ import { Router } from 'express';
 import { promises as fs } from 'fs';
 import path from 'path';
 import rateLimit from 'express-rate-limit';
-import Ajv from 'ajv';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+// Work around TS/NodeNext ESM interop for Ajv default export
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Ajv = require('ajv');
 
 export const analyticsRouter = Router();
 

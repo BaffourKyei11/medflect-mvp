@@ -3,10 +3,17 @@ import { getToken, onLogout } from './session.ts';
 import { enqueue, flush, scheduleFlush } from './queue.ts';
 
 const configuredBase = (import.meta as any).env.VITE_API_BASE as string | undefined;
-// Default to same-origin in browser (Vercel serverless functions), fallback to localhost for SSR/dev tooling
+// Resolve API base:
+// - If VITE_API_BASE is set, use it.
+// - If running in browser during Vite dev, use local API at http://localhost:3001
+// - Otherwise (prod), use same-origin.
+const isBrowser = typeof window !== 'undefined';
+const isDev = (import.meta as any).env?.DEV === true;
 const resolvedBase = configuredBase && configuredBase.trim() !== ''
   ? configuredBase
-  : (typeof window !== 'undefined' ? '' : 'http://localhost:3001');
+  : (isBrowser && isDev)
+    ? 'http://localhost:3001'
+    : '';
 
 export const api = axios.create({ baseURL: `${resolvedBase}/api`, timeout: 20000 });
 

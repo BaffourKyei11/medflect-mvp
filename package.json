@@ -2,14 +2,16 @@
   "name": "medflect-ai",
   "version": "1.0.0",
   "description": "Medflect AI - Smart Healthcare Platform powered by Groq",
-  "main": "server/index.js",
+  "main": "packages/api/dist/index.js",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run web\"",
-    "server": "nodemon server/index.js",
-    "web": "cd packages/web && npm run dev",
-    "build": "cd packages/web && npm run build",
-    "install-all": "npm install && cd packages/web && npm install",
-    "start": "node server/index.js",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "cd packages/web && npm run dev",
+    "dev:api": "cd packages/api && npm run dev",
+    "build": "npm run build:web && npm run build:api",
+    "build:web": "cd packages/web && npm run build",
+    "build:api": "cd packages/api && npm run build",
+    "install-all": "npm install && cd packages/web && npm install && cd ..\\api && npm install",
+    "start": "cd packages/api && npm run start",
     "test": "jest",
     "test:liteLLM": "node test-liteLLM-integration.js",
     "test:security": "jest --testPathPattern=security",
@@ -64,7 +66,8 @@
     "eslint": "^9.32.0",
     "jest": "^30.0.5",
     "nodemon": "^3.1.10",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite-plugin-pwa": "^1.0.2"
   },
   "engines": {
     "node": ">=18.0.0",

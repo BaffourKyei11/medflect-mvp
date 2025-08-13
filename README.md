@@ -1,7 +1,11 @@
-<<<<<<< HEAD
-# medflect-mvp
-=======
->>>>>>> master
+## 🛠️ Troubleshooting (Vercel)
+
+- Error: "Function Runtimes must have a valid version"
+  - Ensure `packages/web/vercel.json` has only SPA routes (no `builds` array)
+  - Ensure there is no `packages/web/api/` directory in the frontend
+  - Set `engines.node` in `packages/web/package.json` to ">=18"
+  - Force re-deploy with: `npx vercel deploy --prod --cwd ./packages/web -f`
+
 # Medflect AI - Smart Healthcare Platform
 
 ## 🏥 Transforming Healthcare in Ghana and Beyond
@@ -64,9 +68,6 @@ Medflect AI is a revolutionary healthcare platform that combines AI-powered clin
 4. **Start Development**
    ```bash
    npm run dev
-<<<<<<< HEAD
-   ```
-=======
 ```
 
 ## 📽️ Demo
@@ -75,17 +76,17 @@ See `Demo/README.md` for step-by-step demo instructions and expected outcomes.
 
 - Demo guide: `Demo/README.md`
 - Screenshots folder: `Demo/screenshots/` (place images like `01-landing.png`, `02-theme-toggle.png`)
->>>>>>> master
+
+## 🔗 Live Deployment
+
+- Frontend (Vercel): https://medflect-bdxaprni9-atenkas-projects.vercel.app
+- Backend (API): Deploy via Render using `render.yaml` (instructions below), then set `VITE_API_BASE` on Vercel to the Render URL.
 
 ## 📁 Project Structure
 
 ```
 medflect-mvp/
-<<<<<<< HEAD
-├── client/                 # React PWA Frontend
-=======
 ├── packages/web/           # Vite React PWA Frontend
->>>>>>> master
 │   ├── src/
 │   │   ├── components/     # React components
 │   │   ├── pages/         # Page components
@@ -112,22 +113,15 @@ medflect-mvp/
 # Server Configuration
 PORT=3001
 NODE_ENV=development
-<<<<<<< HEAD
-=======
 # Serve built web UI from the API in production
 SERVE_WEB_DIST=true
->>>>>>> master
 
 # Database
 DATABASE_URL=https://<your-firebase-project-id>.firebaseio.com
 
 # Groq AI
-<<<<<<< HEAD
 GROQ_API_KEY=your_groq_api_key
-=======
-GROQ_API_KEY=sk-npvlOAYvZsy6iRqqtM5PNA
 GROQ_API_ENDPOINT=http://91.108.112.45:4000
->>>>>>> master
 GROQ_MODEL=llama3-8b-8192
 
 # Blockchain
@@ -230,18 +224,42 @@ npm start
 docker-compose up -d
 ```
 
-<<<<<<< HEAD
-=======
+## ☁️ Deployment
+
+### Frontend (Vercel: static SPA)
+- Location: `packages/web`
+- Config: `packages/web/vercel.json` (static build with SPA routes)
+- Command:
+  ```bash
+  npx vercel deploy --prod --cwd ./packages/web --scope atenkas-projects --yes -f
+  ```
+
+### Backend (Render: Docker)
+- Blueprint: `render.yaml` (builds `packages/api` via Dockerfile)
+- Steps:
+  1) In Render Dashboard → New → Blueprint → connect repo
+  2) Set env vars for the service `medflect-api`:
+     - `PORT=3001`
+     - `CORS_ORIGIN=https://<your-vercel-domain>`
+     - `GROQ_BASE_URL=https://api.groq.com` (or your LiteLLM proxy)
+     - `GROQ_API_KEY=...` (add securely)
+     - `GROQ_MODEL=llama3-8b-8192`
+  3) Deploy and copy the URL (e.g., `https://medflect-api.onrender.com`)
+  4) On Vercel (web project) set env `VITE_API_BASE=https://medflect-api.onrender.com` and redeploy web
+
+Notes:
+- Web calls `${VITE_API_BASE}/api/*` when set; otherwise same-origin.
+- Analytics and KPIs require the backend to be live.
+
 The API container now serves the built frontend from `packages/web/dist` on port 3001.
 
 - Access UI: http://localhost:3001/
-- Health check: http://localhost:3001/health
+- Health check: http://localhost:3001/api/health
 
 Notes:
 - The compose file builds from the root `Dockerfile` and sets `NODE_ENV=production` and `SERVE_WEB_DIST=true` for the API service.
 - There is no separate `web` service; the API serves static assets in production.
 
->>>>>>> master
 ## 🧪 Testing
 
 ```bash
@@ -303,8 +321,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-<<<<<<< HEAD
 **Medflect AI** - Amplifying human caregivers, ensuring every patient's voice is heard. 🇬🇭 
-=======
-**Medflect AI** - Amplifying human caregivers, ensuring every patient's voice is heard. 🇬🇭 
->>>>>>> master
