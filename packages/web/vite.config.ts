@@ -25,6 +25,7 @@ export default defineConfig({
   server: { port: 5173, host: true },
   define: {
     'import.meta.env.VITE_API_BASE': JSON.stringify(process.env.VITE_API_BASE || 'http://localhost:3001'),
-    'import.meta.env.VITE_GROQ_BASE': JSON.stringify(process.env.VITE_GROQ_BASE || 'http://91.108.112.45:4000')
+    'import.meta.env.VITE_GROQ_BASE': JSON.stringify(process.env.VITE_GROQ_BASE || 'http://91.108.112.45:4000'),
+    'import.meta.env.VITE_GROQ_API_KEY': JSON.stringify(process.env.VITE_GROQ_API_KEY || '')
   }
 });

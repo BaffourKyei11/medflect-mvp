@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosHeaders } from 'axios';
 import { getToken, onLogout } from './session.ts';
 import { enqueue, flush, scheduleFlush } from './queue.ts';
 
@@ -19,8 +19,11 @@ export const api = axios.create({ baseURL: `${resolvedBase}/api`, timeout: 20000
 
 api.interceptors.request.use((config) => {
   const t = getToken();
-  if (t) {
-    if (!config.headers) config.headers = {};
+  // Do not send Authorization for public AI endpoints
+  const url = (config.url || '').toString();
+  const isPublicAI = url.includes('/ai/');
+  if (t && !isPublicAI) {
+    if (!config.headers) config.headers = new AxiosHeaders();
     // set Authorization header while preserving AxiosHeaders type
     (config.headers as any)['Authorization'] = `Bearer ${t}`;
   }
@@ -35,8 +38,12 @@ api.interceptors.response.use(
     const isWrite = ['post','put','patch','delete'].includes(method);
     const networkIssue = !navigator.onLine || error.code === 'ERR_NETWORK';
 
-    // Auth handling
-    if (error?.response?.status === 401) onLogout();
+    // Auth handling - avoid logging out for public AI endpoints
+    if (error?.response?.status === 401) {
+      const eurl = (cfg?.url || '').toString();
+      const isAI = eurl.includes('/ai/');
+      if (!isAI) onLogout();
+    }
 
     // Offline-first queue for writes
     if (isWrite && networkIssue && !cfg?.__queued) {
