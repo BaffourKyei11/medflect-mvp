@@ -42,7 +42,11 @@ app.use('/api/ai', (req, _res, next) => { console.log('[AI]', req.method, req.or
 app.use('/api/consent', requireAuth, consentRouter);
 app.use(errorHandler);
 
+<<<<<<< HEAD
 const PORT = Number(process.env.PORT || 3002); // env-driven, defaults to 3002 for local dev
+=======
+const PORT = 3002; // forced for debugging to avoid hitting a stale server on 3001
+>>>>>>> 37a8a7e546e2f0fbbe507dfb1c308647f56b356d
 (async () => {
   try {
     // Allow dev startup even if Firebase creds are not configured
