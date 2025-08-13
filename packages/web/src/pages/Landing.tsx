@@ -114,14 +114,45 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Roadmap */}
+      {/* User Stories */}
       <section className="container mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-2xl font-bold">Roadmap</h2>
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-          <RoadmapCard stage="MVP & Pilot" detail="Deploy at 37 Military Hospital; measure workflow and quality impact." />
-          <RoadmapCard stage="Nationwide" detail="Scale to major Ghana hospitals; align with Ministry of Health strategy." />
-          <RoadmapCard stage="Regional" detail="Expand to Nigeria, Kenya, South Africa; add localization." />
-          <RoadmapCard stage="Scale" detail="Multi‑tenant cloud, certifications, continuous model improvement." />
+        <h2 className="text-2xl font-bold">User stories</h2>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">
+          How different stakeholders use Medflect to turn hospital data into action.
+        </p>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="card">
+            <div className="font-semibold flex items-center gap-2"><Activity className="h-4 w-4 text-sky-600" /> Doctors</div>
+            <ul className="mt-2 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+              <li>• Generate and edit clinical summaries at the bedside</li>
+              <li>• See flagged risks and suggested orders grounded in FHIR</li>
+              <li>• Handoff briefs auto‑compiled from the latest notes</li>
+            </ul>
+          </div>
+          <div className="card">
+            <div className="font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-sky-600" /> Nurses</div>
+            <ul className="mt-2 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+              <li>• Triage queues with AI summaries of chief complaints</li>
+              <li>• Task prompts for vitals, meds, and discharge steps</li>
+              <li>• Works offline; syncs when connectivity returns</li>
+            </ul>
+          </div>
+          <div className="card">
+            <div className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-sky-600" /> Patients</div>
+            <ul className="mt-2 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+              <li>• Receive visit summaries and reminders on mobile/SMS</li>
+              <li>• Grant or revoke consent for data sharing</li>
+              <li>• Access education materials in local context</li>
+            </ul>
+          </div>
+          <div className="card">
+            <div className="font-semibold flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-sky-600" /> Administrators</div>
+            <ul className="mt-2 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+              <li>• Monitor wait times, throughput, and readmit risk</li>
+              <li>• Audit access on‑chain; enforce purpose‑based consent</li>
+              <li>• Track ROI and quality indicators in dashboards</li>
+            </ul>
+          </div>
         </div>
       </section>
 

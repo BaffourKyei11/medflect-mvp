@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { MessageCircle, X, Send, Loader2, CheckCircle2 } from 'lucide-react';
-import { summarizeViaLiteLLM } from '../../services/ai.ts';
+import { summarizeViaApiChat } from '../../services/ai.ts';
 import { track } from '../../services/analytics.ts';
 
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
@@ -30,14 +30,16 @@ export function ChatbotWidget() {
     setInput('');
     setLoading(true);
     try {
-      const payload = { messages: next.map(m => ({ role: m.role, content: m.content })), model: 'gpt-4o-mini' } as any;
-      const data = await summarizeViaLiteLLM(payload);
-      const content = data?.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+      const apiResp = await summarizeViaApiChat({
+        messages: next.map(m => ({ role: m.role, content: m.content }))
+      });
+      const content = apiResp?.summary || 'Sorry, I could not generate a response.';
       setMessages(cur => [...cur, { role: 'assistant', content }]);
-      track('chat_send', { ok: true, model: 'gpt-4o-mini' });
-    } catch (e: any) {
-      setMessages(cur => [...cur, { role: 'assistant', content: 'Network or AI service error. Please try again.' }]);
-      track('chat_send', { ok: false });
+      track('chat_send', { ok: true, via: 'api' });
+    } catch (apiErr: any) {
+      const msg = apiErr?.response?.data?.error || apiErr?.message || 'Network or AI service error. Please try again.';
+      setMessages(cur => [...cur, { role: 'assistant', content: String(msg) }]);
+      track('chat_send', { ok: false, via: 'api' });
     } finally {
       setLoading(false);
     }

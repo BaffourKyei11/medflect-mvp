@@ -1,13 +1,36 @@
 import { Router } from 'express';
-import { generateSummary } from '../services/aiService.js';
+import { generateSummary, generateChatCompletion } from '../services/aiService.js';
 import { createResource } from '../services/fhirService.js';
 export const aiRouter = Router();
+// Summarize for a specific patient and persist a FHIR DocumentReference
 aiRouter.post('/summary/:patientId', async (req, res, next) => {
     try {
         const { patientId } = req.params;
         const r = await generateSummary(patientId);
-        const doc = await createResource('DocumentReference', { resourceType: 'DocumentReference', status: 'current', subject: { reference: `Patient/${patientId}` }, date: new Date().toISOString(), description: 'AI summary', content: [{ attachment: { contentType: 'text/plain', data: Buffer.from(r.summary).toString('base64') } }], extension: [{ url: 'http://medflect.ai/provenance', valueString: JSON.stringify(r.provenance) }] });
+        const doc = await createResource('DocumentReference', {
+            resourceType: 'DocumentReference',
+            status: 'current',
+            subject: { reference: `Patient/${patientId}` },
+            date: new Date().toISOString(),
+            description: 'AI summary',
+            content: [{ attachment: { contentType: 'text/plain', data: Buffer.from(r.summary).toString('base64') } }],
+            extension: [{ url: 'http://medflect.ai/provenance', valueString: JSON.stringify(r.provenance) }]
+        });
         res.json({ summary: r.summary, provenance: r.provenance, documentReferenceId: doc.id });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+// Generic chat completion endpoint used by the web chatbot
+aiRouter.post('/summarize', async (req, res, next) => {
+    try {
+        const { messages, model } = req.body || {};
+        if (!Array.isArray(messages) || messages.length === 0) {
+            return res.status(400).json({ error: 'invalid_payload', details: 'messages[] required' });
+        }
+        const r = await generateChatCompletion({ messages, model });
+        res.json({ summary: r.summary, provenance: r.provenance });
     }
     catch (e) {
         next(e);

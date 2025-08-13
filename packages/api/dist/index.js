@@ -28,7 +28,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/fhir', requireAuth, fhirRouter);
-app.use('/api/ai', requireAuth, aiRouter);
+// Allow public access for summarize endpoint used by landing chatbot
+app.use('/api/ai', aiRouter);
 app.use('/api/consent', requireAuth, consentRouter);
 app.use(errorHandler);
 const PORT = Number(process.env.PORT || 3001);

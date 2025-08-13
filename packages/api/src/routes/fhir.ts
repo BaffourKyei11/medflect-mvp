@@ -1,4 +1,4 @@
-import { Router } from 'express'; import { createResource, getResource, updateResource } from '../services/fhirService.js'; import { blockchainClient } from '../services/blockchainClient.js';
+import { Router } from 'express'; import { createResource, getResource, updateResource } from '../services/fhirService.ts'; import { blockchainClient } from '../services/blockchainClient.ts';
 export const fhirRouter=Router();
 const consentGuard=(cat:string)=>(async (req:any,res:any,next:any)=>{ const id=req.params.id||req.query.patientId||''; const ok=await blockchainClient.checkConsent(id,cat); if(!ok && req.method==='GET') return res.status(403).json({error:'Consent required'}); next(); });
 fhirRouter.get('/:type/:id', consentGuard('clinical'), async (req,res,next)=>{ try{ const {type,id}=req.params; res.json(await getResource(type,id)); }catch(e){ next(e);} });

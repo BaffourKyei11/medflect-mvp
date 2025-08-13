@@ -1,41 +1,73 @@
-## 🛠️ Troubleshooting (Vercel)
+# Medflect AI – Turning Hospital Data into Decisions
 
-- Error: "Function Runtimes must have a valid version"
-  - Ensure `packages/web/vercel.json` has only SPA routes (no `builds` array)
-  - Ensure there is no `packages/web/api/` directory in the frontend
-  - Set `engines.node` in `packages/web/package.json` to ">=18"
-  - Force re-deploy with: `npx vercel deploy --prod --cwd ./packages/web -f`
+## 🏥 The Problem: Hospital Data Is Underutilized
 
-# Medflect AI - Smart Healthcare Platform
+Hospitals accumulate vast amounts of operational and clinical data, yet this data often remains largely unexplored. Teams lack:
 
-## 🏥 Transforming Healthcare in Ghana and Beyond
+- Exploratory analysis to expose patterns and inefficiencies
+- Automated insights that surface trends in real time
+- Predictive analytics to forecast admissions, staffing, and readmissions
+- Clear decision support to reduce guesswork and improve outcomes
 
-Medflect AI is a revolutionary healthcare platform that combines AI-powered clinical assistance with blockchain-based consent management to transform hospitals into smart care hubs. Built specifically for the African healthcare context with offline-first capabilities.
+## 💡 The Solution: Medflect AI
 
-## 🌟 Key Features
+Medflect converts raw hospital data into intelligible, actionable insights. It enables:
 
-- **AI-Powered Clinical Summaries**: Groq-accelerated LLMs generate instant patient summaries
-- **Blockchain Consent Management**: Secure, auditable patient data access control
-- **Offline-First Architecture**: Works seamlessly in low-connectivity environments
-- **HL7 FHIR Compliance**: Interoperable with existing healthcare systems
-- **Multi-Role Interface**: Tailored experiences for doctors, nurses, and patients
-- **Real-time Sync**: Seamless data synchronization when connectivity is available
+- Automated analysis to highlight key trends and anomalies
+- On‑demand querying through dashboards and NLP‑style prompts
+- Predictive capabilities to anticipate demand and risk
+- Decision support and recommendations integrated into clinical workflow
+
+Designed for Ghana and Africa, Medflect is offline‑first, standards‑based (HL7 FHIR), and governed by consent/audit on blockchain.
+
+## 🌟 How Medflect Solves It
+
+- **AI‑Powered Clinical Summaries**: Groq‑accelerated LLMs generate instant, editable patient summaries
+- **Automated Insights & Dashboards**: Surface bottlenecks, risks, and throughput in real time
+- **Predictive Signals**: Forecast readmission risk and resource demand
+- **FHIR Interoperability**: Standards‑based data models for safe integration
+- **Consent & Audit**: On‑chain governance of data access and provenance
+- **Offline‑First**: Local‑first UX with background sync for variable connectivity
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   React PWA     │    │   Node.js API   │    │   Groq AI       │
-│   Frontend      │◄──►│   Backend       │◄──►│   Inference     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌───────────────────────────────┐    ┌─────────────────┐
-│   Firebase Firestore          │    │   Ethereum      │
-│   (offline cache via SDK)     │    │   Blockchain    │
-└───────────────────────────────┘    └─────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│ React + Vite PWA (packages/web)                                        │
+│  • Service Worker (vite-plugin-pwa)                                    │
+│  • IndexedDB cache (idb)                                               │
+│  • Tailwind UI, offline-first UX                                       │
+└───────────────▲───────────────────────────────────────────────────────┘
+                │ HTTP(S)
+                │
+┌───────────────┴──────────────────┐     ┌──────────────────────────────┐
+│ Express API (packages/api)       │◄────┤ Firebase Admin (optional)    │
+│  • Public AI routes:             │     │ • Auth, storage, events       │
+│    - GET /api/ai/status          │     └──────────────────────────────┘
+│    - POST /api/ai/summarize      │
+│  • CORS/Helmet/Morgan            │
+│  • GROQ_MODEL enforced via env   │
+└───────────────┬──────────────────┘
+                │ outbound
+                │
+        ┌───────▼────────┐     ┌──────────────────────────┐     ┌──────────────────────┐
+        │ LiteLLM / Groq │◄────┤ FHIR + MCP Adapters      │────►│ HL7 FHIR Server(s)   │
+        │ (http://91.108…)│     │ (data grounding layer)   │     │ (EHR/interop)        │
+        └─────────────────┘     └──────────────────────────┘     └──────────────────────┘
+                │
+                │ on-chain audit/consent (optional)
+                ▼
+        ┌──────────────────────────────┐
+        │ Ethereum (permissioned)      │
+        │ • Consent tokens, audit log  │
+        └──────────────────────────────┘
 ```
+
+Key flows:
+- Client calls API for AI functions; API enforces allowed `GROQ_MODEL` and forwards to LiteLLM/Groq.
+- PWA provides offline UX via Service Worker and IndexedDB; API calls resume when connectivity returns.
+- FHIR + MCP adapters ground AI outputs in clinical data (patients, labs, meds, encounters).
+- Optional blockchain layer records consent and audit events.
 
 ## 🚀 Quick Start
 
@@ -66,9 +98,16 @@ Medflect AI is a revolutionary healthcare platform that combines AI-powered clin
    ```
 
 4. **Start Development**
-   ```bash
-   npm run dev
-```
+   - API (Express, port 3002)
+     ```bash
+     npm run --prefix packages/api dev:nodemon
+     # Status: http://localhost:3002/api/ai/status
+     ```
+   - Web (Vite, port 5173)
+     ```bash
+     npm run --prefix packages/web dev
+     # App: http://localhost:5173
+     ```
 
 ## 📽️ Demo
 
@@ -86,23 +125,20 @@ See `Demo/README.md` for step-by-step demo instructions and expected outcomes.
 
 ```
 medflect-mvp/
-├── packages/web/           # Vite React PWA Frontend
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/         # Page components
-│   │   ├── services/      # API services
-│   │   ├── hooks/         # Custom hooks
-│   │   ├── utils/         # Utility functions
-│   │   └── types/         # TypeScript types
-├── server/                # Node.js Backend
-│   ├── routes/            # API routes
-│   ├── middleware/        # Express middleware
-│   ├── services/          # Business logic
-│   ├── models/            # Data models
-│   └── utils/             # Server utilities
-├── contracts/             # Smart contracts
-├── docs/                  # Documentation
-└── tests/                 # Test files
+├── packages/web/            # Vite React PWA (frontend)
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── services/
+│       ├── hooks/
+│       └── utils/
+├── packages/api/            # Express API (backend)
+│   └── src/
+│       ├── routes/
+│       ├── middleware/
+│       └── services/
+├── blockchain/              # Ethers + contracts (if used)
+└── packages/web/public/     # Static assets and PWA files
 ```
 
 ## 🔧 Configuration
@@ -110,57 +146,50 @@ medflect-mvp/
 ### Environment Variables
 
 ```env
-# Server Configuration
-PORT=3001
+# API
+PORT=3002
+CORS_ORIGIN=http://localhost:5173
 NODE_ENV=development
-# Serve built web UI from the API in production
 SERVE_WEB_DIST=true
 
-# Database
-DATABASE_URL=https://<your-firebase-project-id>.firebaseio.com
+# Web
+VITE_API_BASE=http://localhost:3002
+VITE_GROQ_BASE=http://91.108.112.45:4000
 
-# Groq AI
+# Groq / LiteLLM
 GROQ_API_KEY=your_groq_api_key
-GROQ_API_ENDPOINT=http://91.108.112.45:4000
-GROQ_MODEL=llama3-8b-8192
+GROQ_BASE_URL=http://91.108.112.45:4000
+GROQ_MODEL=groq/deepseek-r1-distill-llama-70b
 
-# Blockchain
-ETHEREUM_RPC_URL=https://sepolia.infura.io/v3/your_key
-CONTRACT_ADDRESS=your_contract_address
-PRIVATE_KEY=your_private_key
-
-# JWT
-JWT_SECRET=your_jwt_secret
-
-# FHIR
-FHIR_BASE_URL=https://hapi.fhir.org/baseR4
+# Optional
+# ETHEREUM_RPC_URL=...
+# CONTRACT_ADDRESS=...
+# PRIVATE_KEY=...
+# JWT_SECRET=...
+# FHIR_BASE_URL=...
 ```
 
-## 🏥 User Roles
+## 🏥 User Roles (User Stories)
 
 ### 👨‍⚕️ Doctors
-- AI-powered clinical summaries
-- Patient data visualization
-- Clinical decision support
-- Mobile-optimized interface
+- Generate and edit clinical summaries at the bedside
+- View flagged risks and suggested orders grounded in FHIR
+- Receive handoff briefs auto‑compiled from latest notes
 
 ### 👩‍⚕️ Nurses
-- Streamlined patient workflows
-- Vital signs monitoring
-- Task management
-- Quick patient lookups
+- Triage queues with AI summaries of chief complaints
+- Task prompts for vitals, meds, and discharge steps
+- Works offline; syncs when connected
 
 ### 👤 Patients
-- Secure health portal
-- Appointment management
-- Educational materials
-- Consent management
+- Receive visit summaries/reminders via mobile/SMS
+- Grant or revoke consent for data sharing
+- Access contextual education materials
 
 ### 🏢 Administrators
-- Hospital-wide dashboards
-- Performance analytics
-- Workflow customization
-- User management
+- Monitor wait times, throughput, readmit risk
+- Audit access on‑chain; enforce purpose‑based consent
+- Track ROI and quality indicators in dashboards
 
 ## 🔒 Security & Privacy
 

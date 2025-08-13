@@ -7,9 +7,11 @@
     "module": "NodeNext",
     "target": "ES2022",
     "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "strict": true,
+    "noEmit": true,
     "types": ["node", "jest"]
   },
   "include": ["src"]

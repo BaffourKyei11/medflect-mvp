@@ -10,3 +10,17 @@ export async function generateSummary(patientId) {
     const text = r.data?.choices?.[0]?.message?.content ?? 'No content';
     return { summary: text, provenance: { model: process.env.GROQ_MODEL, version: 'api', timestamp: new Date().toISOString(), dataRefs: [] } };
 }
+export async function generateChatCompletion(payload) {
+    if (process.env.MOCK_AI === 'true') {
+        const combined = payload.messages.map(m => `${m.role}: ${m.content}`).join('\n');
+        return { summary: `Mock response. Input:\n${combined}`, provenance: { model: 'mock-llm', version: 'v1', timestamp: new Date().toISOString(), dataRefs: [] } };
+    }
+    const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY;
+    const baseURL = process.env.GROQ_BASE_URL || process.env.OPENAI_BASE_URL;
+    if (!apiKey || !baseURL)
+        throw new Error('AI not configured');
+    const model = payload.model || process.env.GROQ_MODEL || 'llama3-8b-8192';
+    const r = await axios.post(`${baseURL}/v1/chat/completions`, { model, messages: payload.messages }, { headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, timeout: 20000 });
+    const text = r.data?.choices?.[0]?.message?.content ?? 'No content';
+    return { summary: text, provenance: { model, version: 'api', timestamp: new Date().toISOString(), dataRefs: [] } };
+}
