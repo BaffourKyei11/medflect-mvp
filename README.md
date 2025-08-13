@@ -350,4 +350,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Medflect AI** - Amplifying human caregivers, ensuring every patient's voice is heard. 🇬🇭 
+**Medflect AI** - Empowering our healers, honoring every patient. 🇬🇭 
