@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 # medflect-mvp
+=======
+>>>>>>> master
 # Medflect AI - Smart Healthcare Platform
 
 ## 🏥 Transforming Healthcare in Ghana and Beyond
@@ -61,13 +64,28 @@ Medflect AI is a revolutionary healthcare platform that combines AI-powered clin
 4. **Start Development**
    ```bash
    npm run dev
+<<<<<<< HEAD
    ```
+=======
+```
+
+## 📽️ Demo
+
+See `Demo/README.md` for step-by-step demo instructions and expected outcomes.
+
+- Demo guide: `Demo/README.md`
+- Screenshots folder: `Demo/screenshots/` (place images like `01-landing.png`, `02-theme-toggle.png`)
+>>>>>>> master
 
 ## 📁 Project Structure
 
 ```
 medflect-mvp/
+<<<<<<< HEAD
 ├── client/                 # React PWA Frontend
+=======
+├── packages/web/           # Vite React PWA Frontend
+>>>>>>> master
 │   ├── src/
 │   │   ├── components/     # React components
 │   │   ├── pages/         # Page components
@@ -94,12 +112,22 @@ medflect-mvp/
 # Server Configuration
 PORT=3001
 NODE_ENV=development
+<<<<<<< HEAD
+=======
+# Serve built web UI from the API in production
+SERVE_WEB_DIST=true
+>>>>>>> master
 
 # Database
 DATABASE_URL=https://<your-firebase-project-id>.firebaseio.com
 
 # Groq AI
+<<<<<<< HEAD
 GROQ_API_KEY=your_groq_api_key
+=======
+GROQ_API_KEY=sk-npvlOAYvZsy6iRqqtM5PNA
+GROQ_API_ENDPOINT=http://91.108.112.45:4000
+>>>>>>> master
 GROQ_MODEL=llama3-8b-8192
 
 # Blockchain
@@ -202,6 +230,18 @@ npm start
 docker-compose up -d
 ```
 
+<<<<<<< HEAD
+=======
+The API container now serves the built frontend from `packages/web/dist` on port 3001.
+
+- Access UI: http://localhost:3001/
+- Health check: http://localhost:3001/health
+
+Notes:
+- The compose file builds from the root `Dockerfile` and sets `NODE_ENV=production` and `SERVE_WEB_DIST=true` for the API service.
+- There is no separate `web` service; the API serves static assets in production.
+
+>>>>>>> master
 ## 🧪 Testing
 
 ```bash
@@ -263,4 +303,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+<<<<<<< HEAD
 **Medflect AI** - Amplifying human caregivers, ensuring every patient's voice is heard. 🇬🇭 
+=======
+**Medflect AI** - Amplifying human caregivers, ensuring every patient's voice is heard. 🇬🇭 
+>>>>>>> master

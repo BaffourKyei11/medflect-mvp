@@ -1,0 +1,31 @@
+# Docker build context ignores for faster, smaller builds
+# VCS
+.git
+.gitignore
+
+# Node
+node_modules
+**/node_modules
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# Frontend build artifacts
+packages/web/dist
+packages/web/build
+
+# Backend build artifacts (if any)
+dist
+build
+
+# Env and local
+.env
+.env.*
+.DS_Store
+*.swp
+
+# Docker leftovers
+Dockerfile*
+docker-compose*.yml
+!Dockerfile
+!docker-compose.mono.yml

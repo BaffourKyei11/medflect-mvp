@@ -1,0 +1,20 @@
+# Dockerfile for Medflect blockchain deployment & integration
+FROM node:20-bullseye
+
+WORKDIR /usr/src/app
+
+# Copy only blockchain and minimal backend for deployment
+# Copy only minimal blockchain package.json for dependency install
+COPY ./blockchain/package.json ./package.json
+RUN yarn install
+
+# Copy rest of blockchain code
+COPY ./blockchain ./blockchain
+
+# Set environment variables for Besu node and private key
+ENV BESU_RPC_URL=http://host.docker.internal:8545
+ENV PRIVATE_KEY=your_private_key_here
+
+WORKDIR /usr/src/app/blockchain/scripts
+
+CMD ["node", "deploy.js"]

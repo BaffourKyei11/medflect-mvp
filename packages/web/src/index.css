@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root { color-scheme: light dark; }
+
+/* Clinical defaults */
+body { @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100; }
+.btn { @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-60; }
+.btn:focus { @apply outline-none ring-2 ring-offset-2; }
+.btn-primary { @apply bg-sky-500 text-white hover:bg-sky-600; }
+.card { @apply rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800; }
+.badge { @apply inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-100; }
+.skeleton { @apply animate-pulse rounded-md bg-slate-200 dark:bg-slate-700; }
