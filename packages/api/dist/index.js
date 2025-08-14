@@ -1,4 +1,11 @@
 import 'dotenv/config';
+// Dev diagnostics: surface any startup errors with full details
+process.on('uncaughtException', (err) => {
+    console.error('[Fatal] Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (reason) => {
+    console.error('[Fatal] Unhandled Rejection:', reason);
+});
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -89,12 +96,17 @@ const PORT = Number(process.env.PORT || 3001); // env-driven, defaults to 3001 f
         headersTimeout: server.headersTimeout
     });
     // Initialize background worker (can be split to separate service later)
-    try {
-        await initAIWorker();
-        console.log('[Startup] BullMQ AI worker initialized');
+    if (process.env.DISABLE_REDIS === 'true') {
+        console.log('[Startup] BullMQ disabled via DISABLE_REDIS=true');
     }
-    catch (e) {
-        console.warn('[Startup] Worker init skipped/failure:', e.message);
+    else {
+        try {
+            await initAIWorker();
+            console.log('[Startup] BullMQ AI worker initialized');
+        }
+        catch (e) {
+            console.warn('[Startup] Worker init skipped/failure:', e.message);
+        }
     }
     server.listen(PORT, () => console.log(`API listening on :${PORT}`));
 })();

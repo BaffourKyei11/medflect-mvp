@@ -1,0 +1,11 @@
+{
+  "app.title": "Medflect",
+  "nav.dashboard": "Dashboard",
+  "nav.patients": "Nɔɔmi",
+  "nav.consent": "Gbɛi shikpɔ",
+  "nav.audit": "Ɛkpɔŋkpɔŋ ni",
+  "actions.save": "Tẹŋŋɛ",
+  "actions.cancel": "Hii",
+  "status.offline": "Otsɔŋŋ",
+  "status.syncing": "Nɔ ni kpaa..."
+}

@@ -42,8 +42,7 @@ export default function Dashboard(){
         <h3 className="text-lg font-semibold">Quick actions</h3>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           <Link to="/patients" className="btn btn-primary text-center">Patients</Link>
-          <Link to="/consent" className="btn text-center border border-slate-300 dark:border-slate-700">Consent</Link>
-          <Link to="/audit" className="btn text-center border border-slate-300 dark:border-slate-700">Audit</Link>
+          <Link to="/consent" className="btn text-center border border-slate-300 dark:border-slate-700">Consent + Audit</Link>
           <Link to="/sync" className="btn text-center border border-slate-300 dark:border-slate-700">Sync</Link>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Stethoscope, Users, Shield, ClipboardList } from 'lucide-react';
+import { Stethoscope, Users, Shield } from 'lucide-react';
 import { getCount, subscribe } from '../../services/queue.ts';
 import { getAiStatus, type AiStatus } from '../../services/ai.ts';
 
@@ -31,8 +31,7 @@ export function Navbar({ right }: { right?: React.ReactNode }) {
         <nav className="hidden md:flex items-center gap-2">
           {link('/','Home',Users)}
           {link('/dashboard','Dashboard',Users)}
-          {link('/consent','Consent',Shield)}
-          {link('/audit','Audit',ClipboardList)}
+          {link('/consent','Consent + Audit',Shield)}
         </nav>
         <div className="flex items-center gap-2">
           {ai && (

@@ -1,0 +1,11 @@
+{
+  "app.title": "Medflect",
+  "nav.dashboard": "Dashboard",
+  "nav.patients": "Patients",
+  "nav.consent": "Consent",
+  "nav.audit": "Audit",
+  "actions.save": "Save",
+  "actions.cancel": "Cancel",
+  "status.offline": "You are offline",
+  "status.syncing": "Syncing..."
+}

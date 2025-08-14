@@ -13,8 +13,7 @@ import { ThemeProvider } from './context/ThemeContext.tsx';
 import Patients from './routes/Patients.tsx';
 import PatientDetail from './routes/PatientDetail.tsx';
 import AISummary from './routes/AISummary.tsx';
-import Consent from './routes/Consent.tsx';
-import Audit from './routes/Audit.tsx';
+import ConsentAudit from './routes/ConsentAudit.tsx';
 import Sync from './routes/Sync.tsx';
 import Dashboard from './routes/Dashboard.tsx';
 import { SyncIndicator } from './components/SyncIndicator.tsx';
@@ -39,8 +38,8 @@ function AppShell() {
           <Route path="/patients" element={<Patients />} />
           <Route path="/patients/:id" element={<PatientDetail />} />
           <Route path="/patients/:id/ai" element={<AISummary />} />
-          <Route path="/consent" element={<Consent />} />
-          <Route path="/audit" element={<Audit />} />
+          <Route path="/consent" element={<ConsentAudit />} />
+          <Route path="/audit" element={<ConsentAudit />} />
           <Route path="/sync" element={<Sync />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
