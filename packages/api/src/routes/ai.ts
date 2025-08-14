@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { generateSummary, generateChatCompletion } from '../services/aiService.ts';
-import { createResource } from '../services/fhirService.ts';
+import { generateSummary, generateChatCompletion } from '../services/aiService.js';
+import { createResource } from '../services/fhirService.js';
+import { recordAudit } from '../services/audit.js';
 
 export const aiRouter = Router();
 
@@ -38,6 +39,7 @@ aiRouter.post('/summary/:patientId', async (req, res, next) => {
       content: [{ attachment: { contentType: 'text/plain', data: Buffer.from(r.summary).toString('base64') } }],
       extension: [{ url: 'http://medflect.ai/provenance', valueString: JSON.stringify(r.provenance) }]
     });
+    await recordAudit({ event: 'ai_summary', action: 'generate', patientId, target: `DocumentReference/${doc.id}`, allowed: true, meta: { model: r.provenance?.model } }, req);
     res.json({ summary: r.summary, provenance: r.provenance, documentReferenceId: doc.id });
   } catch (e) { next(e); }
 });
@@ -50,6 +52,7 @@ aiRouter.post('/summarize', async (req, res, next) => {
       return res.status(400).json({ error: 'invalid_payload', details: 'messages[] required' });
     }
     const r = await generateChatCompletion({ messages, model });
+    await recordAudit({ event: 'ai_chat', action: 'summarize', target: 'ai/summarize', allowed: true, meta: { model: r.provenance?.model } }, req);
     res.json({ summary: r.summary, provenance: r.provenance });
   } catch (e) { next(e); }
 });

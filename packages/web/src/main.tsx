@@ -8,9 +8,8 @@ import { OfflineIndicator } from './modules/status/OfflineIndicator.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { ThemeToggle } from './modules/theme/ThemeToggle.tsx';
 import { registerSW } from 'virtual:pwa-register';
-import { AuthProvider, Private } from './context/AuthContext.tsx';
+import { AuthProvider } from './context/AuthContext.tsx';
 import { ThemeProvider } from './context/ThemeContext.tsx';
-import Auth from './routes/Auth.tsx';
 import Patients from './routes/Patients.tsx';
 import PatientDetail from './routes/PatientDetail.tsx';
 import AISummary from './routes/AISummary.tsx';
@@ -20,6 +19,7 @@ import Sync from './routes/Sync.tsx';
 import Dashboard from './routes/Dashboard.tsx';
 import { SyncIndicator } from './components/SyncIndicator.tsx';
 import Landing from './pages/Landing.tsx';
+import Home from './pages/Home.tsx';
 import { ChatbotWidget } from './components/chat/ChatbotWidget.tsx';
 
 registerSW({ immediate: true });
@@ -33,14 +33,15 @@ function AppShell() {
       <main className="container mx-auto max-w-6xl flex-1 px-4 py-4">
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
-          <Route path="/login" element={<Auth />} />
-          <Route path="/patients" element={<Private><Patients /></Private>} />
-          <Route path="/patients/:id" element={<Private><PatientDetail /></Private>} />
-          <Route path="/patients/:id/ai" element={<Private><AISummary /></Private>} />
-          <Route path="/consent" element={<Private><Consent /></Private>} />
-          <Route path="/audit" element={<Private><Audit /></Private>} />
-          <Route path="/sync" element={<Private><Sync /></Private>} />
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/patients" element={<Patients />} />
+          <Route path="/patients/:id" element={<PatientDetail />} />
+          <Route path="/patients/:id/ai" element={<AISummary />} />
+          <Route path="/consent" element={<Consent />} />
+          <Route path="/audit" element={<Audit />} />
+          <Route path="/sync" element={<Sync />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

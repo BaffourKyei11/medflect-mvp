@@ -1,1 +1,239 @@
-<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Medflect</title><style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f8fafc;color:#0f172a}</style></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medflect</title>
+    <style>
+      body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f8fafc;color:#0f172a}
+      .mf-card{background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+      .mf-row{display:flex;gap:.5rem;align-items:center}
+      .mf-input{flex:1;min-width:0;border:1px solid #cbd5e1;border-radius:8px;padding:.5rem .75rem}
+      .mf-btn{border:1px solid #0ea5e9;background:#0ea5e9;color:#fff;border-radius:8px;padding:.5rem .75rem;cursor:pointer}
+      .mf-btn.alt{border-color:#64748b;background:#fff;color:#0f172a}
+      .mf-muted{color:#475569;font-size:.85rem}
+      .mf-badge{display:inline-block;border-radius:9999px;padding:.15rem .5rem;font-size:.75rem;border:1px solid #cbd5e1}
+      @media (max-width: 480px){ .mf-row{flex-direction:column; align-items:stretch} }
+      .mf-fixed{position:fixed; right:1rem; bottom:1rem; left:1rem; max-width:680px; margin:0 auto}
+    </style>
+  </head>
+  <body>
+    <!-- Responsive Consent Widget (outside React root) -->
+    <div id="consent-widget" class="mf-fixed" aria-live="polite" style="display:none">
+      <!-- Category Tabs -->
+      <div class="mf-card" style="padding:.5rem .5rem; margin-bottom:.5rem;">
+        <div class="mf-row" style="gap:.5rem; justify-content:flex-start;">
+          <button id="tab-consent" class="mf-btn alt" type="button">Consent</button>
+          <button id="tab-audit" class="mf-btn alt" type="button">Audit</button>
+        </div>
+      </div>
+      <!-- Consent Panel -->
+      <div id="panel-consent" class="mf-card" style="padding: .75rem; display:none">
+        <div class="mf-row" style="justify-content:space-between; gap:.75rem;">
+          <div style="display:flex;flex-direction:column;gap:.25rem;flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+              <strong>Patient Consent</strong>
+              <span id="cw-status" class="mf-badge">Status: unknown</span>
+              <span id="cw-online" class="mf-badge">Online</span>
+            </div>
+            <div class="mf-row">
+              <input id="cw-pid" class="mf-input" placeholder="Patient ID (e.g., P001)" />
+              <button id="cw-load" class="mf-btn alt" type="button">Load</button>
+              <button id="cw-grant" class="mf-btn" type="button">Grant Read</button>
+              <button id="cw-revoke" class="mf-btn alt" type="button">Revoke</button>
+            </div>
+            <div id="cw-msg" class="mf-muted"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Audit Panel -->
+      <div id="panel-audit" class="mf-card" style="padding:.75rem; margin-top:.75rem; display:none">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;">
+            <strong>Audit Trail</strong>
+            <span id="aw-count" class="mf-badge">0</span>
+            <span class="mf-muted">recent events</span>
+          </div>
+          <div class="mf-row" style="gap:.5rem;">
+            <input id="aw-pid" class="mf-input" placeholder="Filter by Patient ID (optional)" />
+            <select id="aw-limit" class="mf-input" style="max-width:140px">
+              <option value="25">Last 25</option>
+              <option value="50" selected>Last 50</option>
+              <option value="100">Last 100</option>
+            </select>
+            <button id="aw-refresh" class="mf-btn alt" type="button">Refresh</button>
+          </div>
+        </div>
+        <div id="aw-msg" class="mf-muted" style="margin-top:.25rem"></div>
+        <div style="margin-top:.5rem; overflow:auto; max-height: 40vh;">
+          <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
+            <thead>
+              <tr style="text-align:left; border-bottom:1px solid #e5e7eb">
+                <th style="padding:.5rem .25rem;">Time</th>
+                <th style="padding:.5rem .25rem;">Actor</th>
+                <th style="padding:.5rem .25rem;">Event</th>
+                <th style="padding:.5rem .25rem;">Target</th>
+              </tr>
+            </thead>
+            <tbody id="aw-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- React App Root -->
+    <div id="root"></div>
+
+    <!-- Widget Logic -->
+    <script type="module">
+      const envBase = import.meta.env?.VITE_API_BASE;
+      const isDev = import.meta.env?.DEV === true;
+      const base = (envBase && String(envBase).trim() !== '') ? envBase : (isDev ? 'http://localhost:3001' : '');
+      const API = `${base}/api`;
+
+      const $ = (id) => document.getElementById(id);
+      const cwContainer = $('consent-widget');
+      const tabConsent = $('tab-consent');
+      const tabAudit = $('tab-audit');
+      const panelConsent = $('panel-consent');
+      const panelAudit = $('panel-audit');
+      const pidEl = $('cw-pid');
+      const statusEl = $('cw-status');
+      const msgEl = $('cw-msg');
+      const onlineEl = $('cw-online');
+
+      // Audit elements
+      const apidEl = $('aw-pid');
+      const alimitEl = $('aw-limit');
+      const abodyEl = $('aw-body');
+      const amsgEl = $('aw-msg');
+      const acountEl = $('aw-count');
+
+      function token(){ try { return localStorage.getItem('medflect.token') || ''; } catch { return ''; } }
+      function authHeaders(){ const t = token(); return t ? { 'Authorization': `Bearer ${t}` } : {}; }
+
+      function setOnlineBadge(){
+        const online = navigator.onLine;
+        onlineEl.textContent = online ? 'Online' : 'Offline';
+        onlineEl.style.borderColor = online ? '#22c55e' : '#ef4444';
+        onlineEl.style.color = online ? '#065f46' : '#7f1d1d';
+      }
+      window.addEventListener('online', setOnlineBadge);
+      window.addEventListener('offline', setOnlineBadge);
+      setOnlineBadge();
+
+      // Show combined widget for consent/audit routes and select appropriate tab
+      function syncWidgetVisibility(){
+        try{
+          const p = (location.pathname || '').toLowerCase();
+          const showConsent = p.includes('consent');
+          const showAudit = p.includes('audit');
+          if (cwContainer) cwContainer.style.display = (showConsent || showAudit) ? '' : 'none';
+          if (showAudit) selectTab('audit'); else if (showConsent) selectTab('consent');
+        }catch{}
+      }
+      // Listen for SPA navigations
+      (function(){
+        const _ps = history.pushState;
+        const _rs = history.replaceState;
+        history.pushState = function(){ const r = _ps.apply(this, arguments); window.dispatchEvent(new Event('mf:navigate')); return r; };
+        history.replaceState = function(){ const r = _rs.apply(this, arguments); window.dispatchEvent(new Event('mf:navigate')); return r; };
+      })();
+      window.addEventListener('popstate', syncWidgetVisibility);
+      window.addEventListener('mf:navigate', syncWidgetVisibility);
+      // Initial check
+      syncWidgetVisibility();
+
+      // Tab selection
+      function selectTab(which){
+        const auditSel = which === 'audit';
+        if (panelConsent) panelConsent.style.display = auditSel ? 'none' : '';
+        if (panelAudit) panelAudit.style.display = auditSel ? '' : 'none';
+        if (tabConsent) tabConsent.className = 'mf-btn ' + (auditSel ? 'alt' : '');
+        if (tabAudit) tabAudit.className = 'mf-btn ' + (auditSel ? '' : 'alt');
+        if (auditSel) setTimeout(loadAudit, 0);
+      }
+      tabConsent?.addEventListener('click', () => selectTab('consent'));
+      tabAudit?.addEventListener('click', () => selectTab('audit'));
+
+      async function loadConsent(){
+        const id = pidEl.value.trim();
+        if (!id) { msg('Enter a patient ID'); return; }
+        msg('Loading…');
+        try{
+          const res = await fetch(`${API}/consent/${encodeURIComponent(id)}`, { headers: { ...authHeaders() } });
+          if (!res.ok) throw new Error(`Load failed: ${res.status}`);
+          const data = await res.json();
+          statusEl.textContent = `Status: ${data?.consent || 'none'}`;
+          statusEl.style.borderColor = (data?.consent === 'read') ? '#22c55e' : '#cbd5e1';
+          msg('');
+        }catch(e){ msg(String(e?.message||e)); }
+      }
+
+      async function upsertConsent(consent){
+        const id = pidEl.value.trim();
+        if (!id) { msg('Enter a patient ID'); return; }
+        msg('Saving…');
+        try{
+          const res = await fetch(`${API}/consent`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ patientId: id, consent })
+          });
+          if (res.status === 202) { msg('Saved (queued)'); return; }
+          if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+          const r = await res.json().catch(()=>({}));
+          msg((r && r.ok) ? 'Saved' : 'Saved');
+          await loadConsent();
+        }catch(e){ msg(String(e?.message||e)); }
+      }
+
+      function msg(t){ msgEl.textContent = t || ''; }
+
+      $('cw-load').addEventListener('click', loadConsent);
+      $('cw-grant').addEventListener('click', () => upsertConsent('read'));
+      $('cw-revoke').addEventListener('click', () => upsertConsent('none'));
+
+      // ----- Audit Widget Logic -----
+      function amsg(t){ amsgEl.textContent = t || ''; }
+      function renderAudit(items){
+        abodyEl.innerHTML = '';
+        const rows = (items||[]).map(e => {
+          const when = e.timestamp || e._ts || e.time || '';
+          const actor = e.actor || e.user || 'system';
+          const ev = e.event || e.action || '';
+          const tgt = e.target || e.resource || '';
+          return `<tr style=\"border-top:1px solid #f1f5f9\"><td style=\"padding:.4rem .25rem; white-space:nowrap\">${escapeHtml(when)}</td><td style=\"padding:.4rem .25rem\">${escapeHtml(actor)}</td><td style=\"padding:.4rem .25rem\">${escapeHtml(ev)}</td><td style=\"padding:.4rem .25rem; word-break:break-all\">${escapeHtml(tgt)}</td></tr>`;
+        }).join('');
+        abodyEl.innerHTML = rows;
+        acountEl.textContent = String(items?.length || 0);
+      }
+
+      function escapeHtml(s){
+        return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+      }
+
+      async function loadAudit(){
+        const params = new URLSearchParams();
+        const pid = (apidEl?.value||'').trim();
+        const limit = Number(alimitEl?.value || 50) || 50;
+        if (pid) params.set('patientId', pid);
+        params.set('limit', String(limit));
+        amsg('Loading…');
+        try{
+          const res = await fetch(`${API}/audit?${params.toString()}`, { headers: { ...authHeaders() } });
+          if (!res.ok) throw new Error(`Audit load failed: ${res.status}`);
+          const data = await res.json();
+          renderAudit(Array.isArray(data) ? data : (data?.items||[]));
+          amsg('');
+        }catch(e){ amsg(String(e?.message||e)); }
+      }
+
+      $('aw-refresh').addEventListener('click', loadAudit);
+      // Initial lazy load
+      setTimeout(loadAudit, 300);
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

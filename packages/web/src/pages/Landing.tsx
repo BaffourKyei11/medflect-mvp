@@ -39,8 +39,8 @@ export default function Landing() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link to="/dashboard" onClick={() => track('cta_click', { id: 'explore_dashboard' })} className="btn btn-primary">Explore Dashboard</Link>
-                <Link to="/login" onClick={() => track('cta_click', { id: 'sign_in' })} className="btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                  Sign in
+                <Link to="/" onClick={() => track('cta_click', { id: 'go_home' })} className="btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                  Go to Home
                 </Link>
               </div>
               <div className="mt-6 flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">

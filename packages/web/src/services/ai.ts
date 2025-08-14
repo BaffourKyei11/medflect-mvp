@@ -32,3 +32,8 @@ export const getAiStatus = async (): Promise<AiStatus> => {
     return { mock: false, model: null, baseURL: null };
   }
 };
+
+export const summarizeForPatient = async (patientId: string) => {
+  const { data } = await api.post(`/ai/summary/${encodeURIComponent(patientId)}`);
+  return data as { summary: string; provenance?: any; documentReferenceId?: string };
+};

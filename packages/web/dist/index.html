@@ -1,3 +1,92 @@
-<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Medflect</title><style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f8fafc;color:#0f172a}</style>  <script type="module" crossorigin src="/assets/index-BHhuVqnH.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Cq7bVySj.css">
-<link rel="manifest" href="/manifest.webmanifest"></head><body><div id="root"></div></body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medflect</title>
+    <style>
+      body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f8fafc;color:#0f172a}
+      .mf-card{background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+      .mf-row{display:flex;gap:.5rem;align-items:center}
+      .mf-input{flex:1;min-width:0;border:1px solid #cbd5e1;border-radius:8px;padding:.5rem .75rem}
+      .mf-btn{border:1px solid #0ea5e9;background:#0ea5e9;color:#fff;border-radius:8px;padding:.5rem .75rem;cursor:pointer}
+      .mf-btn.alt{border-color:#64748b;background:#fff;color:#0f172a}
+      .mf-muted{color:#475569;font-size:.85rem}
+      .mf-badge{display:inline-block;border-radius:9999px;padding:.15rem .5rem;font-size:.75rem;border:1px solid #cbd5e1}
+      @media (max-width: 480px){ .mf-row{flex-direction:column; align-items:stretch} }
+      .mf-fixed{position:fixed; right:1rem; bottom:1rem; left:1rem; max-width:680px; margin:0 auto}
+    </style>
+    <script type="module" crossorigin src="/assets/index-BbnrYJkx.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-5Iat5e-d.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body>
+    <!-- Responsive Consent Widget (outside React root) -->
+    <div id="consent-widget" class="mf-fixed" aria-live="polite" style="display:none">
+      <!-- Category Tabs -->
+      <div class="mf-card" style="padding:.5rem .5rem; margin-bottom:.5rem;">
+        <div class="mf-row" style="gap:.5rem; justify-content:flex-start;">
+          <button id="tab-consent" class="mf-btn alt" type="button">Consent</button>
+          <button id="tab-audit" class="mf-btn alt" type="button">Audit</button>
+        </div>
+      </div>
+      <!-- Consent Panel -->
+      <div id="panel-consent" class="mf-card" style="padding: .75rem; display:none">
+        <div class="mf-row" style="justify-content:space-between; gap:.75rem;">
+          <div style="display:flex;flex-direction:column;gap:.25rem;flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+              <strong>Patient Consent</strong>
+              <span id="cw-status" class="mf-badge">Status: unknown</span>
+              <span id="cw-online" class="mf-badge">Online</span>
+            </div>
+            <div class="mf-row">
+              <input id="cw-pid" class="mf-input" placeholder="Patient ID (e.g., P001)" />
+              <button id="cw-load" class="mf-btn alt" type="button">Load</button>
+              <button id="cw-grant" class="mf-btn" type="button">Grant Read</button>
+              <button id="cw-revoke" class="mf-btn alt" type="button">Revoke</button>
+            </div>
+            <div id="cw-msg" class="mf-muted"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Audit Panel -->
+      <div id="panel-audit" class="mf-card" style="padding:.75rem; margin-top:.75rem; display:none">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;">
+            <strong>Audit Trail</strong>
+            <span id="aw-count" class="mf-badge">0</span>
+            <span class="mf-muted">recent events</span>
+          </div>
+          <div class="mf-row" style="gap:.5rem;">
+            <input id="aw-pid" class="mf-input" placeholder="Filter by Patient ID (optional)" />
+            <select id="aw-limit" class="mf-input" style="max-width:140px">
+              <option value="25">Last 25</option>
+              <option value="50" selected>Last 50</option>
+              <option value="100">Last 100</option>
+            </select>
+            <button id="aw-refresh" class="mf-btn alt" type="button">Refresh</button>
+          </div>
+        </div>
+        <div id="aw-msg" class="mf-muted" style="margin-top:.25rem"></div>
+        <div style="margin-top:.5rem; overflow:auto; max-height: 40vh;">
+          <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
+            <thead>
+              <tr style="text-align:left; border-bottom:1px solid #e5e7eb">
+                <th style="padding:.5rem .25rem;">Time</th>
+                <th style="padding:.5rem .25rem;">Actor</th>
+                <th style="padding:.5rem .25rem;">Event</th>
+                <th style="padding:.5rem .25rem;">Target</th>
+              </tr>
+            </thead>
+            <tbody id="aw-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- React App Root -->
+    <div id="root"></div>
+
+    <!-- Widget Logic -->
+
+  </body>
+</html>

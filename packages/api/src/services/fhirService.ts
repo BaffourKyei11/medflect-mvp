@@ -1,4 +1,4 @@
-import { firestore } from './firebase.ts';
+import { firestore } from './firebase.js';
 import { randomUUID } from 'crypto';
 
 export type FhirResource = { resourceType: string; id?: string; meta?: any; [k: string]: any };

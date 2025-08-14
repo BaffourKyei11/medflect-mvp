@@ -1,16 +1,18 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../config.js';
 export const requireAuth = (req, res, next) => {
-    const hdr = req.headers.authorization || '';
-    const token = hdr.startsWith('Bearer ') ? hdr.slice(7) : '';
-    if (!token)
-        return res.status(401).json({ error: 'Unauthorized' });
     try {
-        const payload = jwt.verify(token, config.jwtSecret);
-        req.user = { id: payload.sub, role: payload.role };
+        const header = req.headers['authorization'] || req.headers['Authorization'];
+        if (!header || Array.isArray(header))
+            return res.status(401).json({ error: 'Missing Authorization header' });
+        const [scheme, token] = header.split(' ');
+        if (scheme !== 'Bearer' || !token)
+            return res.status(401).json({ error: 'Invalid Authorization header' });
+        const secret = process.env.JWT_SECRET || 'dev';
+        const payload = jwt.verify(token, secret);
+        req.user = payload;
         next();
     }
-    catch {
-        return res.status(401).json({ error: 'Invalid token' });
+    catch (e) {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 };
