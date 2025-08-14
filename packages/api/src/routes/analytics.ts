@@ -4,6 +4,7 @@ import path from 'path';
 import rateLimit from 'express-rate-limit';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
+import { recordAudit } from '../services/audit.js';
 // Work around TS/NodeNext ESM interop for Ajv default export
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Ajv = require('ajv');
@@ -40,6 +41,9 @@ analyticsRouter.post('/', async (req, res, next) => {
     const file = path.join(dir, 'analytics.log');
     try { await fs.mkdir(dir, { recursive: true }); } catch {}
     await fs.appendFile(file, line, 'utf8');
+    try {
+      await recordAudit({ event: 'analytics_event', action: 'create', target: 'analytics', allowed: true, meta: { event: evt.event } }, req as any);
+    } catch {}
     res.status(204).end();
   } catch (err) {
     next(err);

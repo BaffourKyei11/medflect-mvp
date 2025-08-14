@@ -109,16 +109,36 @@ Key flows:
    ```
 
 4. **Start Development**
-   - API (Express, port 3002)
+   - API (Express, port 3001)
      ```bash
-     npm run --prefix packages/api dev:nodemon
-     # Status: http://localhost:3002/api/ai/status
+     # In a PowerShell terminal
+     $env:DISABLE_REDIS='true'
+     $env:DISABLE_BLOCKCHAIN='true'
+     $env:PORT='3001'
+     $env:CORS_ORIGIN='*'
+     $env:JWT_SECRET='dev-secret'
+     $env:GROQ_BASE_URL='http://91.108.112.45:4000'
+     npm run --prefix packages/api dev
+     # Status: http://localhost:3001/api/ai/status
+     # Health: http://localhost:3001/health
      ```
    - Web (Vite, port 5173)
      ```bash
      npm run --prefix packages/web dev
      # App: http://localhost:5173
+     # Optionally set VITE_API_BASE=http://localhost:3001
      ```
+
+### Blockchain Helpers
+
+- Print env exports from deployed artifacts (PowerShell/Bash):
+  ```bash
+  npm run --prefix packages/api chain:env
+  ```
+- Print recent AccessLog events (defaults: last 2000 blocks, local RPC):
+  ```bash
+  npm run --prefix packages/api chain:logs
+  ```
 
 ## 📽️ Demo
 
@@ -158,13 +178,13 @@ medflect-mvp/
 
 ```env
 # API
-PORT=3002
+PORT=3001
 CORS_ORIGIN=http://localhost:5173
 NODE_ENV=development
 SERVE_WEB_DIST=true
 
 # Web
-VITE_API_BASE=http://localhost:3002
+VITE_API_BASE=http://localhost:3001
 VITE_GROQ_BASE=http://91.108.112.45:4000
 
 # Groq / LiteLLM
@@ -172,10 +192,13 @@ GROQ_API_KEY=your_groq_api_key
 GROQ_BASE_URL=http://91.108.112.45:4000
 GROQ_MODEL=groq/deepseek-r1-distill-llama-70b
 
-# Optional
-# ETHEREUM_RPC_URL=...
-# CONTRACT_ADDRESS=...
-# PRIVATE_KEY=...
+# Optional (Blockchain)
+# EVM_RPC_URL=http://127.0.0.1:8545
+# EVM_PRIVATE_KEY=0x...
+# ACCESS_LOG_ADDRESS=0x...
+# CONSENT_TOKEN_ADDRESS=0x...
+# BLOCKCHAIN_SALT=hex-32-bytes
+# DISABLE_BLOCKCHAIN=true
 # JWT_SECRET=...
 # FHIR_BASE_URL=...
 ```

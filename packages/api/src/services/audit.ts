@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import type { Request } from 'express';
+import { blockchainClient } from './blockchainClient.js';
 
 export type AuditEntry = {
   event: string;
@@ -41,6 +42,21 @@ export async function recordAudit(entry: AuditEntry, req?: Request) {
   try {
     const io = (req as any)?.app?.get?.('io');
     if (io) io.emit('audit:event', enriched);
+  } catch {}
+
+  // Fire-and-forget on-chain audit hash (disabled when DISABLE_BLOCKCHAIN=true)
+  try {
+    void blockchainClient.recordAuditHash({
+      event: enriched.event,
+      actor: enriched.actor,
+      patientId: enriched.patientId,
+      target: enriched.target,
+      resource: enriched.resource,
+      allowed: enriched.allowed,
+      result: enriched.result,
+      meta: enriched.meta,
+      timestamp: (enriched as any).timestamp
+    }, 0, 'audit');
   } catch {}
 
   return enriched;

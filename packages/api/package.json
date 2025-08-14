@@ -13,7 +13,11 @@
     "worker": "node dist/index.js",
     "prisma": "prisma",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev --name init_auth"
+    "prisma:migrate": "prisma migrate dev --name init_auth",
+    "chain:env": "node scripts/load-local-chain.js",
+    "chain:logs": "node ../../blockchain/scripts/printAccessLogs.js --from 2000",
+    "chain:e2e": "node scripts/e2e-consent-audit.js",
+    "chain:set-operator": "node ../../blockchain/scripts/setOperator.js"
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
