@@ -13,7 +13,7 @@ const SECURITY_CONFIG = {
   MAX_TOKENS_PER_REQUEST: 4000,
   MAX_REQUESTS_PER_MINUTE: 60,
   MAX_REQUESTS_PER_HOUR: 1000,
-  ALLOWED_MODELS: ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'],
+  ALLOWED_MODELS: ['groq/deepseek-r1-distill-llama-70b', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'],
   SENSITIVE_FIELDS: ['ssn', 'credit_card', 'password', 'private_key', 'secret'],
   MAX_INPUT_LENGTH: 10000,
   MIN_CONFIDENCE_THRESHOLD: 0.7
@@ -172,7 +172,7 @@ const testGroqConnection = async () => {
     
     const response = await groqClient.chat.completions.create({
       messages: [{ role: 'user', content: sanitizedInput }],
-      model: process.env.GROQ_MODEL || 'llama3-8b-8192',
+      model: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
       max_tokens: 10,
       temperature: 0.1
     });
@@ -337,7 +337,7 @@ Please provide evidence-based clinical decision support including:
           content: sanitizedPrompt
         }
       ],
-      model: process.env.GROQ_MODEL || 'llama3-8b-8192',
+      model: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
       max_tokens: Math.min(1500, SECURITY_CONFIG.MAX_TOKENS_PER_REQUEST),
       temperature: 0.2
     });
@@ -439,7 +439,7 @@ const generatePatientCommunication = async (patientId, messageType, context, use
           content: sanitizedPrompt
         }
       ],
-      model: process.env.GROQ_MODEL || 'llama3-8b-8192',
+      model: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
       max_tokens: Math.min(500, SECURITY_CONFIG.MAX_TOKENS_PER_REQUEST),
       temperature: 0.7
     });
@@ -535,7 +535,7 @@ Provide:
           content: sanitizedPrompt
         }
       ],
-      model: process.env.GROQ_MODEL || 'llama3-8b-8192',
+      model: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
       max_tokens: Math.min(1000, SECURITY_CONFIG.MAX_TOKENS_PER_REQUEST),
       temperature: 0.1
     });

@@ -3,7 +3,7 @@
 ## 🏥 The Problem: Hospital Data Is Underutilized
 
 Hospitals accumulate vast amounts of operational and clinical data, yet this data often remains largely unexplored. Teams lack:
-
+ 
 - Exploratory analysis to expose patterns and inefficiencies
 - Automated insights that surface trends in real time
 - Predictive analytics to forecast admissions, staffing, and readmissions
@@ -11,7 +11,7 @@ Hospitals accumulate vast amounts of operational and clinical data, yet this dat
 
 ## 💡 The Solution: Medflect AI
 
-Medflect converts raw hospital data into intelligible, actionable insights. It enables:
+Medflect AI is a scalable infrastructure platform that converts raw hospital data into intelligible, actionable insights. It enables:
 
 - Automated analysis to highlight key trends and anomalies
 - On‑demand querying through dashboards and NLP‑style prompts
@@ -68,6 +68,17 @@ Key flows:
 - PWA provides offline UX via Service Worker and IndexedDB; API calls resume when connectivity returns.
 - FHIR + MCP adapters ground AI outputs in clinical data (patients, labs, meds, encounters).
 - Optional blockchain layer records consent and audit events.
+
+## 🧱 Scalable by Design
+
+- **Stateless API tier**: All routes under `/api/*` are stateless, enabling horizontal scaling behind a load balancer.
+- **Async AI workloads**: Long-running AI tasks can be queued (e.g., BullMQ/Redis) to apply backpressure, retries, and DLQs.
+- **Resilient upstreams**: Circuit breakers, timeouts, and exponential backoff for LiteLLM/Groq and FHIR sources.
+- **Edge-first delivery**: Static web is CDN-cacheable with content hashing; API responses support ETags and sensible TTLs.
+- **Observability**: OpenTelemetry traces/metrics/logs across web→API→AI providers; SLOs on latency/error budgets.
+- **Multi-tenant ready**: Clear boundaries for tenant isolation and data partitioning (facility/region) in the data layer.
+- **Offline-first**: PWA reduces server load and improves resilience under variable connectivity.
+- **Security & governance at scale**: Secrets management, PHI-safe logging, consent/audit event stream with optional on-chain anchoring.
 
 ## 🚀 Quick Start
 
@@ -168,6 +179,22 @@ GROQ_MODEL=groq/deepseek-r1-distill-llama-70b
 # JWT_SECRET=...
 # FHIR_BASE_URL=...
 ```
+
+### Groq model configuration
+
+This project is configured to use the following Groq model via LiteLLM-compatible API:
+
+```json
+{
+  "id": "groq/deepseek-r1-distill-llama-70b",
+  "object": "model",
+  "created": 1677610602,
+  "owned_by": "openai"
+}
+```
+
+- API status exposes this under `GET /api/ai/status` as `modelDetails` along with `model` and `baseURL`.
+- Runtime selection is controlled with env vars: `GROQ_BASE_URL`, `GROQ_API_KEY`, `GROQ_MODEL`.
 
 ## 🏥 User Roles (User Stories)
 
@@ -272,7 +299,7 @@ docker-compose up -d
      - `CORS_ORIGIN=https://<your-vercel-domain>`
      - `GROQ_BASE_URL=https://api.groq.com` (or your LiteLLM proxy)
      - `GROQ_API_KEY=...` (add securely)
-     - `GROQ_MODEL=llama3-8b-8192`
+     - `GROQ_MODEL=groq/deepseek-r1-distill-llama-70b`
   3) Deploy and copy the URL (e.g., `https://medflect-api.onrender.com`)
   4) On Vercel (web project) set env `VITE_API_BASE=https://medflect-api.onrender.com` and redeploy web
 
@@ -287,7 +314,7 @@ The API container now serves the built frontend from `packages/web/dist` on port
 
 Notes:
 - The compose file builds from the root `Dockerfile` and sets `NODE_ENV=production` and `SERVE_WEB_DIST=true` for the API service.
-- There is no separate `web` service; the API serves static assets in production.
+- For small, single-container deployments, the API can serve static assets. **For scalable production**, prefer deploying the frontend as static assets behind a CDN and running the API as a separate, horizontally scalable service behind a load balancer.
 
 ## 🧪 Testing
 
@@ -350,4 +377,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Medflect AI** - Amplifying human caregivers, ensuring every patient's voice is heard. 🇬🇭 
+**Medflect AI** - Empowering our healers, honoring every patient. 🇬🇭 

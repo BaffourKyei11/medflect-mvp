@@ -9,7 +9,7 @@ The Medflect AI platform has been successfully integrated with the provided Lite
 ### LiteLLM Configuration
 - **Endpoint**: `http://91.108.112.45:4000`
 - **Virtual Key**: `sk-npvlOAYvZsy6iRqqtM5PNA`
-- **Model**: `llama3-8b-8192`
+- **Model**: `groq/deepseek-r1-distill-llama-70b`
 - **Integration Method**: Groq SDK with custom endpoint
 
 ### Environment Variables
@@ -17,7 +17,7 @@ The Medflect AI platform has been successfully integrated with the provided Lite
 # LiteLLM Configuration
 LITELLM_ENDPOINT=http://91.108.112.45:4000
 LITELLM_VIRTUAL_KEY=sk-npvlOAYvZsy6iRqqtM5PNA
-LITELLM_MODEL=llama3-8b-8192
+LITELLM_MODEL=groq/deepseek-r1-distill-llama-70b
 
 # AI Security Configuration
 AI_MAX_TOKENS_PER_REQUEST=4000

@@ -16,7 +16,8 @@ services:
       - PORT=3001
       - DATABASE_URL=./data/medflect.db
       - GROQ_API_KEY=${GROQ_API_KEY}
-      - GROQ_MODEL=llama3-8b-8192
+      - GROQ_MODEL=groq/deepseek-r1-distill-llama-70b
+      - GROQ_BASE_URL=${GROQ_BASE_URL:-http://91.108.112.45:4000}
       - ETHEREUM_RPC_URL=${ETHEREUM_RPC_URL}
       - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
       - PRIVATE_KEY=${PRIVATE_KEY}
@@ -24,7 +25,20 @@ services:
       - HOSPITAL_ID=37_military_hospital
       - HOSPITAL_NAME=37 Military Hospital
       - HOSPITAL_LOCATION=Accra, Ghana
-      - TIMEZONE=Africa/Accra
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      # Rate limiting
+      - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-900000}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
+      # Circuit breaker and timeouts
+      - CB_FAILURE_THRESHOLD=${CB_FAILURE_THRESHOLD:-5}
+      - CB_RESET_MS=${CB_RESET_MS:-30000}
+      - AI_UPSTREAM_TIMEOUT_MS=${AI_UPSTREAM_TIMEOUT_MS:-20000}
+      - REQUEST_TIMEOUT_MS=${REQUEST_TIMEOUT_MS:-30000}
+      - HEADERS_TIMEOUT_MS=${HEADERS_TIMEOUT_MS:-35000}
+      # Redis connection for BullMQ
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-medflect123}
     volumes:
       - medflect_data:/app/data
       - medflect_logs:/app/logs
@@ -75,7 +89,7 @@ services:
     networks:
       - medflect-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://medflect-app:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -14,7 +14,13 @@ aiRouter.get('/status', (_req, res) => {
   res.json({
     mock: process.env.MOCK_AI === 'true',
     model: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
-    baseURL: process.env.GROQ_BASE_URL || process.env.OPENAI_BASE_URL || 'http://91.108.112.45:4000'
+    baseURL: process.env.GROQ_BASE_URL || process.env.OPENAI_BASE_URL || 'http://91.108.112.45:4000',
+    modelDetails: {
+      id: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
+      object: 'model',
+      created: 1677610602,
+      owned_by: 'openai'
+    }
   });
 });
 

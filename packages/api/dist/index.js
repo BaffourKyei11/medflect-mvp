@@ -32,7 +32,7 @@ app.use('/api/fhir', requireAuth, fhirRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api/consent', requireAuth, consentRouter);
 app.use(errorHandler);
-const PORT = Number(process.env.PORT || 3001);
+const PORT = Number(process.env.PORT || 3002);
 (async () => {
     firebaseInit();
     server.listen(PORT, () => console.log(`API listening on :${PORT}`));

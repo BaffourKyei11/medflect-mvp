@@ -44,7 +44,7 @@ DATABASE_URL=./data/medflect.db
 
 # Groq AI
 GROQ_API_KEY=your_groq_api_key_here
-GROQ_MODEL=llama3-8b-8192
+GROQ_MODEL=groq/deepseek-r1-distill-llama-70b
 
 # Blockchain
 ETHEREUM_RPC_URL=https://sepolia.infura.io/v3/your_key
