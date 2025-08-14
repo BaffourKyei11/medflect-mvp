@@ -58,6 +58,26 @@ JWT_SECRET=your_super_secret_jwt_key_here
 HOSPITAL_ID=37_military_hospital
 HOSPITAL_NAME=37 Military Hospital
 HOSPITAL_LOCATION=Accra, Ghana
+
+### Additional runtime variables
+
+These variables control cross-origin access, SPA static serving, and mobile/web API base URLs.
+
+```env
+# CORS allowlist (comma-separated). Use explicit origins in production.
+CORS_ORIGIN=http://localhost:5173,http://localhost:3001
+
+# When true, the API serves the built web SPA from packages/web/dist
+SERVE_WEB_DIST=true
+
+# Disable Redis/BullMQ worker (use for local development when Redis is not available)
+DISABLE_REDIS=true
+
+# Web (Vite) client API base override for local dev (optional)
+VITE_API_BASE=http://localhost:3001
+
+# Mobile (Expo) client API base for devices/simulators
+EXPO_PUBLIC_API_BASE=http://<your-machine-ip>:3001/api
 ```
 
 ## 🐳 Docker Deployment
@@ -262,6 +282,11 @@ az container create \
 | `ETHEREUM_RPC_URL` | Ethereum RPC endpoint | No | - |
 | `JWT_SECRET` | JWT signing secret | Yes | - |
 | `HOSPITAL_ID` | Hospital identifier | Yes | - |
+| `CORS_ORIGIN` | Comma-separated origin allowlist for CORS (credentials-safe) | Recommended | - |
+| `SERVE_WEB_DIST` | If `true`, API serves the SPA from `packages/web/dist` | No | `false` |
+| `DISABLE_REDIS` | If `true`, disables BullMQ/Redis worker (local dev) | No | `false` |
+| `VITE_API_BASE` | Web client API base URL (Vite) | No | - |
+| `EXPO_PUBLIC_API_BASE` | Mobile (Expo) API base URL for device/simulator | No | - |
 
 ### Database Configuration
 

@@ -7,13 +7,15 @@ process.on('unhandledRejection', (reason) => {
   console.error('[Fatal] Unhandled Rejection:', reason);
 });
 import express from 'express';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import http from 'http';
 import { Server as IOServer } from 'socket.io';
 import rateLimit from 'express-rate-limit';
 import client from 'prom-client';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { firebaseInit } from './services/firebase.js';
 import { authRouter } from './routes/auth.js';
 import { fhirRouter } from './routes/fhir.js';
@@ -33,8 +35,29 @@ const server = http.createServer(app);
 const io = new IOServer(server, { cors: { origin: process.env.CORS_ORIGIN || '*' } });
 (app as any).set('io', io);
 
+// ESM-friendly __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
+// CORS with credentials-safe configuration
+// Allowlist can be a comma-separated list in CORS_ORIGIN (e.g., "http://localhost:5173,https://app.example.com")
+const allowlist = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+const corsOptions: CorsOptions = {
+  origin(origin, callback) {
+    // Allow non-browser or same-origin requests (no origin header)
+    if (!origin) return callback(null, true);
+    // If no allowlist provided, reflect the request origin (development convenience)
+    if (allowlist.length === 0) return callback(null, true);
+    if (allowlist.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
 
@@ -69,6 +92,19 @@ app.use('/api/patients', requireAuth, patientsRouter);
 // Allow public access for summarize endpoint used by landing chatbot
 app.use('/api/ai', (req, _res, next) => { console.log('[AI]', req.method, req.originalUrl); next(); }, aiRouter);
 app.use('/api/consent', requireAuth, consentRouter);
+
+// Optionally serve built web app from API
+if (process.env.SERVE_WEB_DIST === 'true') {
+  // Resolve monorepo path to web/dist
+  const webDist = path.resolve(__dirname, '../../../web/dist');
+  console.log('[Static] Serving web dist from:', webDist);
+  app.use(express.static(webDist, { index: 'index.html', extensions: ['html'] }));
+  // SPA fallback for non-API routes
+  app.get(/^(?!\/api\/|\/metrics$|\/health$).*/, (_req, res) => {
+    res.sendFile(path.join(webDist, 'index.html'));
+  });
+}
+
 app.use(errorHandler);
 
 // Explicit status route for resilience in case router mount is missed in a stale build
