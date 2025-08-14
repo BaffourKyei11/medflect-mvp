@@ -16,7 +16,7 @@ const PROVIDERS = {
       apiKey: process.env.GROQ_API_KEY || process.env.LITELLM_VIRTUAL_KEY,
       baseURL: process.env.GROQ_BASE_URL || process.env.LITELLM_ENDPOINT
     }),
-    defaultModel: process.env.GROQ_MODEL || 'llama3-8b-8192',
+    defaultModel: process.env.GROQ_MODEL || 'groq/deepseek-r1-distill-llama-70b',
     supports: ['chat', 'completion'],
   },
   // openai: {

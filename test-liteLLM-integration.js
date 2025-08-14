@@ -14,7 +14,7 @@ const crypto = require('crypto');
 const TEST_CONFIG = {
   endpoint: 'http://91.108.112.45:4000',
   virtualKey: 'sk-npvlOAYvZsy6iRqqtM5PNA',
-  model: 'llama3-8b-8192',
+  model: 'groq/deepseek-r1-distill-llama-70b',
   timeout: 30000
 };
 
